@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Longs Studio - 专业软件制作团队</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --text: #333;
+            --text-light: #7f8c8d;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--secondary);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* 导航栏样式 */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: var(--primary);
+            margin-left: 10px;
+        }
+
+        .logo-icon {
+            color: var(--secondary);
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* 英雄区域样式 */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid white;
+            margin-left: 15px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 关于我们样式 */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .about-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 软件下载样式 */
+        .download-section {
+            background-color: var(--light);
+        }
+
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .software-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .software-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .software-img {
+            height: 200px;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .software-info {
+            padding: 25px;
+        }
+
+        .software-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .software-info p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .software-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* 公告样式 */
+        .announcement-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .announcement-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .announcement-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .announcement-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* 团队样式 */
+        .team-section {
+            background-color: var(--light);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-member {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+
+        .member-img {
+            height: 200px;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .member-info {
+            padding: 20px;
+        }
+
+        .member-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .member-role {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* 页脚样式 */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+
+            .about-content {
+                flex-direction: column;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-secondary {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-code logo-icon"></i>
+                    <h1>Longs Studio</h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#software">软件下载</a></li>
+                    <li><a href="#announcements">团队公告</a></li>
+                    <li><a href="#team">团队成员</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>创新软件，改变未来</h2>
+            <p>Longs Studio是一支专注于高质量软件开发的团队，我们致力于通过技术创新解决实际问题，为用户提供卓越的数字体验。</p>
+            <a href="#software" class="btn">探索我们的软件</a>
+            <a href="#about" class="btn btn-secondary">了解更多</a>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>关于我们</h2>
+                <p>了解Longs Studio的使命、愿景和价值观</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>我们是谁？</h3>
+                    <p>Longs Studio成立于2024年，是一支充满激情和创造力的软件开发团队。我们专注于开发高质量的桌面应用程序、移动应用和Web解决方案。</p>
+                    <p>我们的团队由经验丰富的开发人员、设计师和产品经理组成，致力于通过技术创新解决实际问题，为用户提供卓越的数字体验。</p>
+                    <p>我们相信技术的力量可以改变世界，我们的使命是通过精心设计的软件产品，帮助个人和企业实现他们的目标。</p>
+                    <a href="#team" class="btn" style="margin-top: 20px;">认识我们的团队（Longs Studio）</a>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="团队工作场景">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 软件下载 -->
+    <section class="section download-section" id="software">
+        <div class="container">
+            <div class="section-title">
+                <h2>软件下载</h2>
+                <p>探索我们精心打造的软件产品</p>
+            </div>
+            <div class="software-grid">
+                <div class="software-card">
+                    <div class="software-img">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="software-info">
+                        <h3>中考计时器</h3>
+                        <p>一款强大的教育软件，可以直接倒计时考试时间，帮助学生合理规划复习计划。</p>
+                        <div class="software-meta">
+                            <span>版本: 2.1.5</span>
+                            <span>大小: 85 MB</span>
+                        </div>
+                        <a href="https://www.123912.com/s/uA8NTd-Wq65d" class="btn" target="_blank">立即下载</a>
+                    </div>
+                </div>
+                <div class="software-card">
+                    <div class="software-img">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="software-info">
+                        <h3>智慧白板</h3>
+                        <p>智能教育软件，告别传统黑白，提高教育力。</p>
+                        <div class="software-meta">
+                            <span>版本: 0.1.1</span>
+                            <span>大小: 未知</span>
+                        </div>
+                        <a href="#" class="btn">（内测中）</a>
+                    </div>
+                </div>
+                <div class="software-card">
+                    <div class="software-img">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="software-info">
+                        <h3>更多功能</h3>
+                        <p>更多功能即将推出，敬请期待。</p>
+                        <div class="software-meta">
+                            <span>版本: 未知</span>
+                            <span>大小: 未知</span>
+                        </div>
+                        <a href="#" class="btn">即将推出</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 团队公告 -->
+    <section class="section" id="announcements">
+        <div class="container">
+            <div class="section-title">
+                <h2>团队公告</h2>
+                <p>了解我们的最新动态和产品更新</p>
+            </div>
+            <div class="announcement-list">
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">中考计时器 Pro 2.0.1 版本发布</h3>
+                        <span class="announcement-date">2025年10月01日</span>
+                    </div>
+                    <p>我们很高兴地宣布 中考计时器 Pro 2.0.1版本正式发布！此版本新增了机器学习预测功能，优化了大数据处理性能，并修复了多个已知问题。</p>
+                </div>
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">Longs Studio 一周年庆典活动</h3>
+                        <span class="announcement-date">2025年9月28日</span>
+                    </div>
+                    <p>感谢大家对Longs Studio的支持！为庆祝成立五周年，我们将在10月份推出特别优惠活动，所有软件产品享受9折优惠。</p>
+                </div>
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">新项目启动：智慧白板</h3>
+                        <span class="announcement-date">2025年9月10日</span>
+                    </div>
+                    <p>我们已启动新一代AI助手项目的开发工作，该产品将集成先进的自然语言处理技术，为学校提供智能化服务。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 团队成员 -->
+    <section class="section team-section" id="team">
+        <div class="container">
+            <div class="section-title">
+                <h2>团队成员</h2>
+                <p>认识Longs Studio背后的优秀人才</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-img">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <h3>龙芯宇</h3>
+                        <p class="member-role">创始人 & CEO</p>
+                        <p>多年软件开发经验，专注于企业级应用架构设计。</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-img">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <h3>廖瑾恒</h3>
+                        <p class="member-role">技术支持</p>
+                        <p>loa6 OS 团队人员，多次帮助Longs Studio团队。</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-img">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <h3>王* *</h3>
+                        <p class="member-role">产品经理</p>
+                        <p>用户体验专家，负责产品规划与需求分析。</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="member-img">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <h3>陈* *</h3>
+                        <p class="member-role">UI/UX设计师</p>
+                        <p>创意设计师，致力于打造直观优雅的用户界面。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Longs Studio</h3>
+                    <p>创新软件，改变未来。我们致力于通过技术创新解决实际问题，为用户提供卓越的数字体验。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#about">关于我们</a></li>
+                        <li><a href="#software">软件下载</a></li>
+                        <li><a href="#announcements">团队公告</a></li>
+                        <li><a href="#team">团队成员</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>软件产品</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.123912.com/s/uA8NTd-Wq65d" target="_blank">中考计时器</a></li>
+                        <li><a href="#">智慧白板</a></li>
+                        <li><a href="#">关于中考计时器文案</a></li>
+                        <li><a href="#">即将推出</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>联系我们</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> 厦门市</li>
+                        <li><i class="fas fa-phone"></i> +86 137 2603 6564</li>
+                        <li><i class="fas fa-envelope"></i> longxinyu2024@outlook.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Longs Studio. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 简单的移动菜单切换
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 移动端点击后关闭菜单
+                    if (window.innerWidth <= 768) {
+                        document.querySelector('.nav-links').style.display = 'none';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
