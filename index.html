@@ -256,6 +256,62 @@
             color: var(--text-light);
         }
 
+        /* 插件库样式 */
+        .plugins-section {
+            background-color: var(--light);
+        }
+
+        .plugins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .plugin-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .plugin-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .plugin-img {
+            height: 200px;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .plugin-info {
+            padding: 25px;
+        }
+
+        .plugin-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .plugin-info p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .plugin-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
         /* 公告样式 */
         .announcement-list {
             max-width: 800px;
@@ -581,6 +637,7 @@
                     <li><a href="#home">首页</a></li>
                     <li><a href="#about">关于我们</a></li>
                     <li><a href="#software">软件下载</a></li>
+                    <li><a href="#plugins">插件库</a></li>
                     <li><a href="#announcements">团队公告</a></li>
                     <li><a href="#team">团队成员</a></li>
                     <li><a href="#contact">联系我们</a></li>
@@ -598,7 +655,7 @@
             <h2>创新软件，改变未来</h2>
             <p>Longs Studio是一支专注于高质量软件开发的团队，我们致力于通过技术创新解决实际问题，为用户提供卓越的数字体验。</p>
             <a href="#software" class="btn">探索我们的软件</a>
-            <a href="#about" class="btn btn-secondary">了解更多</a>
+            <a href="#plugins" class="btn btn-secondary">查看插件库</a>
         </div>
     </section>
 
@@ -678,6 +735,36 @@
         </div>
     </section>
 
+    <!-- 插件库 -->
+    <section class="section plugins-section" id="plugins">
+        <div class="container">
+            <div class="section-title">
+                <h2>Longs插件库</h2>
+                <p>扩展功能，增强体验 - 探索我们丰富的插件资源</p>
+            </div>
+            <div class="plugins-grid">
+                <div class="plugin-card">
+                    <div class="plugin-img">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <div class="plugin-info">
+                        <h3>龙思关机插件</h3>
+                        <p>一款实用的关机管理工具，提供定时关机、快速关机和关机计划等功能，帮助您更好地管理计算机使用时间。</p>
+                        <div class="plugin-meta">
+                            <span>版本: 1.0.0</span>
+                            <span>修改时间: 2025/10/25</span>
+                        </div>
+                        <a href="https://www.123865.com/s/uA8NTd-hSy5d?pwd=5408#" class="btn" target="_blank">立即下载</a>
+                    </div>
+                </div>
+                <!-- 这里可以添加更多插件 -->
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="color: var(--text-light);">更多插件正在开发中，敬请期待！</p>
+            </div>
+        </div>
+    </section>
+
     <!-- 团队公告 -->
     <section class="section" id="announcements">
         <div class="container">
@@ -706,6 +793,13 @@
                         <span class="announcement-date">2025年9月10日</span>
                     </div>
                     <p>我们已启动新一代AI助手项目的开发工作，该产品将集成先进的自然语言处理技术，为学校提供智能化服务。</p>
+                </div>
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">Longs插件库正式上线</h3>
+                        <span class="announcement-date">2025年10月25日</span>
+                    </div>
+                    <p>我们很高兴地宣布Longs插件库正式上线！首个插件"龙思关机插件"已发布，未来将会有更多实用插件加入。</p>
                 </div>
             </div>
         </div>
@@ -783,6 +877,7 @@
                         <li><a href="#home">首页</a></li>
                         <li><a href="#about">关于我们</a></li>
                         <li><a href="#software">软件下载</a></li>
+                        <li><a href="#plugins">插件库</a></li>
                         <li><a href="#announcements">团队公告</a></li>
                         <li><a href="#team">团队成员</a></li>
                     </ul>
@@ -792,7 +887,7 @@
                     <ul class="footer-links">
                         <li><a href="https://www.123912.com/s/uA8NTd-Wq65d" target="_blank">中考计时器</a></li>
                         <li><a href="#" id="footer-smart-board-link">智慧白板</a></li>
-                        <li><a href="#">关于中考计时器文案</a></li>
+                        <li><a href="#plugins">插件库</a></li>
                         <li><a href="#">即将推出</a></li>
                     </ul>
                 </div>
