@@ -1,0 +1,1672 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSBOX图片查看器与放映系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            margin-bottom: 20px;
+        }
+        
+        /* 改进的上传UI */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(76, 201, 240, 0.3);
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-section:hover {
+            border-color: #4cc9f0;
+            box-shadow: 0 12px 40px rgba(76, 201, 240, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .upload-area {
+            padding: 50px 20px;
+            cursor: pointer;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .upload-icon {
+            font-size: 5rem;
+            color: #4cc9f0;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 8px rgba(76, 201, 240, 0.3);
+        }
+        
+        .upload-text h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .upload-text p {
+            color: #a0a0c0;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(90deg, #4361ee, #4cc9f0);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.5);
+        }
+        
+        .file-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            display: none;
+            border-left: 4px solid #4cc9f0;
+            text-align: left;
+        }
+        
+        .file-info-icon {
+            font-size: 1.5rem;
+            color: #4cc9f0;
+            margin-right: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* PPT样式布局 - 优化版 */
+        .main-content {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .ppt-container {
+            display: flex;
+            gap: 20px;
+            height: 70vh;
+            min-height: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .thumbnail-sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .thumbnail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .thumbnail-title {
+            font-size: 1.2rem;
+            color: #4cc9f0;
+        }
+        
+        .thumbnail-count {
+            font-size: 0.9rem;
+            background: rgba(76, 201, 240, 0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .thumbnail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .thumbnail-item {
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .thumbnail-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .thumbnail-item.active {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.5), 0 5px 15px rgba(67, 97, 238, 0.2);
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .thumbnail-img-container {
+            height: 100px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .thumbnail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .thumbnail-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .thumbnail-info {
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .thumbnail-index {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            font-weight: 500;
+        }
+        
+        .thumbnail-size {
+            font-size: 0.8rem;
+            color: #888;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .main-view {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .main-view-header {
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .main-image-title {
+            font-size: 1.4rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .image-info {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .main-view-controls {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .main-view-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e6e6e6;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .main-view-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .main-view-btn.presentation-btn {
+            background: linear-gradient(90deg, #4361ee, #4cc9f0);
+            color: white;
+        }
+        
+        .main-view-btn.current-presentation-btn {
+            background: linear-gradient(90deg, #f72585, #7209b7);
+            color: white;
+        }
+        
+        .main-view-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .main-image-container {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .main-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-image-nav {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+            z-index: 10;
+        }
+        
+        .image-nav-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-nav-btn:hover {
+            background: rgba(76, 201, 240, 0.8);
+            transform: scale(1.1);
+        }
+        
+        /* 全屏放映模式 - 修复横屏问题 */
+        .presentation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .presentation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid #333;
+            z-index: 1002;
+            position: relative;
+        }
+        
+        .presentation-title {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+        
+        .presentation-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .presentation-controls button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1003;
+            position: relative;
+        }
+        
+        .presentation-controls button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .presentation-controls button.active {
+            background: #4361ee;
+            box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+        }
+        
+        .presentation-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .presentation-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .presentation-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            z-index: 1001;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            position: relative;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: none;
+        }
+        
+        .drawing-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        /* 画笔控制面板（默认隐藏） */
+        .brush-controls {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 12px;
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1002;
+            min-width: 220px;
+            border: 1px solid #444;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+        }
+        
+        .brush-controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .brush-controls-title {
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .close-brush-controls {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .close-brush-controls:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .brush-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        
+        .brush-control label {
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        
+        .brush-control input {
+            width: 120px;
+        }
+        
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .color-option {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+        
+        .brush-controls-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .clear-btn {
+            background: #f72585;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .clear-btn:hover {
+            background: #ff006e;
+        }
+        
+        .close-panel-btn {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .close-panel-btn:hover {
+            background: #3a56d4;
+        }
+        
+        .image-counter {
+            color: #fff;
+            font-size: 1.1rem;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            z-index: 1001;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            font-size: 1.2rem;
+        }
+        
+        .loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #4cc9f0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 移动端横屏适配 - 修复功能键失效问题 */
+        @media (max-width: 1024px) {
+            .ppt-container {
+                flex-direction: column;
+                height: auto;
+                min-height: auto;
+            }
+            
+            .thumbnail-sidebar {
+                width: 100%;
+                max-height: 200px;
+                flex-direction: column;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+            
+            .thumbnail-list {
+                flex-direction: row;
+                padding-bottom: 10px;
+            }
+            
+            .thumbnail-item {
+                min-width: 180px;
+            }
+            
+            .main-view-body {
+                min-height: 400px;
+            }
+            
+            /* 横屏模式优化 */
+            .presentation-container {
+                /* 移除旋转，使用标准布局 */
+                transform: none !important;
+                width: 100% !important;
+                height: 100% !important;
+                left: 0 !important;
+                top: 0 !important;
+            }
+            
+            .presentation-body {
+                /* 确保内容在横屏下正常显示 */
+                height: calc(100% - 60px);
+            }
+            
+            .presentation-nav {
+                bottom: 20px;
+            }
+            
+            .brush-controls {
+                top: 70px;
+                right: 10px;
+                min-width: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 20px;
+            }
+            
+            .upload-icon {
+                font-size: 3.5rem;
+            }
+            
+            .upload-text h3 {
+                font-size: 1.5rem;
+            }
+            
+            .ppt-container {
+                padding: 10px;
+            }
+            
+            .main-view-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .main-view-controls {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            .main-view-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+            
+            .nav-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .presentation-controls button {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .brush-controls {
+                min-width: 180px;
+                padding: 12px;
+            }
+            
+            /* 横屏模式按钮放大 */
+            @media (orientation: landscape) {
+                .nav-btn {
+                    width: 70px;
+                    height: 70px;
+                    font-size: 1.8rem;
+                }
+                
+                .presentation-controls button {
+                    width: 44px;
+                    height: 44px;
+                }
+                
+                .brush-controls {
+                    top: 80px;
+                    right: 15px;
+                    min-width: 180px;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-images"></i>智慧白板课件预览</h1>
+            <p class="subtitle">上传.lsbox文件（ZIP格式），浏览图片并使用放映模式进行演示</p>
+        </header>
+        
+        <section class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-file-archive"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>上传LSBOX文件</h3>
+                    <p>选择或拖放一个.lsbox文件</p>
+                    <button class="upload-btn" id="uploadButton">
+                        <i class="fas fa-folder-open"></i> 选择LSBOX文件
+                    </button>
+                    <div class="file-info" id="fileInfo">
+                        <div>
+                            <i class="fas fa-file-archive file-info-icon"></i>
+                            <span id="fileName">未选择文件</span>
+                            <span id="fileSize"></span>
+                        </div>
+                        <div id="fileDetails" style="margin-top: 10px; font-size: 0.9rem; color: #a0a0c0;"></div>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".lsbox,.zip">
+            </div>
+        </section>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>正在解压文件并加载图片...</p>
+        </div>
+        
+        <div class="main-content" id="mainContent">
+            <div class="ppt-container">
+                <div class="thumbnail-sidebar" id="thumbnailSidebar">
+                    <div class="thumbnail-header">
+                        <div class="thumbnail-title">图片预览</div>
+                        <div class="thumbnail-count" id="thumbnailCount">0 张图片</div>
+                    </div>
+                    <div class="thumbnail-list" id="thumbnailList">
+                        <!-- 缩略图将通过JS动态添加 -->
+                    </div>
+                </div>
+                
+                <div class="main-view">
+                    <div class="main-view-header">
+                        <div class="main-image-title">
+                            <span id="mainImageTitle">图片 1</span>
+                            <span class="image-info" id="mainImageInfo">尺寸: -</span>
+                        </div>
+                        <div class="main-view-controls">
+                            <button class="main-view-btn" id="prevBtnMain">
+                                <i class="fas fa-chevron-left"></i> 上一张
+                            </button>
+                            <button class="main-view-btn presentation-btn" id="startPresentationBtn">
+                                <i class="fas fa-play"></i> 从头放映
+                            </button>
+                            <button class="main-view-btn current-presentation-btn" id="startFromCurrentBtn">
+                                <i class="fas fa-play-circle"></i> 当页放映
+                            </button>
+                            <button class="main-view-btn" id="nextBtnMain">
+                                下一张 <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="main-view-body">
+                        <div class="main-image-container">
+                            <img class="main-image" id="mainImage" src="" alt="当前图片">
+                            
+                            <div class="main-image-nav">
+                                <button class="image-nav-btn" id="prevImageBtn">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="image-nav-btn" id="nextImageBtn">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="presentation-container" id="presentationContainer">
+            <div class="presentation-header">
+                <div class="presentation-title">放映模式 - <span id="currentImageTitle">图片 1</span></div>
+                <div class="presentation-controls">
+                    <button id="brushToggleBtn" title="画笔工具">
+                        <i class="fas fa-paint-brush"></i>
+                    </button>
+                    <button id="prevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button id="exitPresentationBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="presentation-body">
+                <img class="presentation-image" id="presentationImage" src="" alt="放映图片">
+                
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas class="drawing-canvas" id="drawingCanvas"></canvas>
+                </div>
+                
+                <div class="brush-controls" id="brushControls">
+                    <div class="brush-controls-header">
+                        <div class="brush-controls-title">画笔设置</div>
+                        <button class="close-brush-controls" id="closeBrushControls" title="关闭面板">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="brush-control">
+                        <label>画笔大小:</label>
+                        <input type="range" id="brushSize" min="1" max="20" value="5">
+                    </div>
+                    
+                    <div class="brush-control">
+                        <label>画笔颜色:</label>
+                    </div>
+                    
+                    <div class="color-palette" id="colorPalette">
+                        <!-- 颜色选项将通过JS动态添加 -->
+                    </div>
+                    
+                    <div class="brush-controls-footer">
+                        <button class="clear-btn" id="clearCanvas">清除</button>
+                        <button class="close-panel-btn" id="closePanelBtn">关闭面板</button>
+                    </div>
+                </div>
+                
+                <div class="presentation-nav">
+                    <button class="nav-btn" id="presentationPrevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" id="presentationNextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="image-counter" id="imageCounter">1 / 0</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>智慧白板课件查看工具 &copy; 2023 | 支持.lsbox文件解压、图片浏览和画笔功能</p>
+            <p>使用说明：上传.lsbox文件后，点击"从头放映"或"当页放映"进入全屏模式</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        // 全局变量
+        let images = [];
+        let currentImageIndex = 0;
+        let isDrawing = false;
+        let isBrushActive = false;
+        let canvas, ctx;
+        let lastX = 0;
+        let lastY = 0;
+        let isMobile = false;
+        
+        // 预设颜色
+        const presetColors = [
+            '#ff0000', // 红色
+            '#00ff00', // 绿色
+            '#0000ff', // 蓝色
+            '#ffff00', // 黄色
+            '#ff00ff', // 品红
+            '#00ffff', // 青色
+            '#ffffff', // 白色
+            '#000000', // 黑色
+            '#ff8800', // 橙色
+            '#8800ff'  // 紫色
+        ];
+        
+        // DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileDetails = document.getElementById('fileDetails');
+        const loading = document.getElementById('loading');
+        const mainContent = document.getElementById('mainContent');
+        const thumbnailCount = document.getElementById('thumbnailCount');
+        const thumbnailList = document.getElementById('thumbnailList');
+        const mainImageTitle = document.getElementById('mainImageTitle');
+        const mainImageInfo = document.getElementById('mainImageInfo');
+        const mainImage = document.getElementById('mainImage');
+        const prevBtnMain = document.getElementById('prevBtnMain');
+        const nextBtnMain = document.getElementById('nextBtnMain');
+        const prevImageBtn = document.getElementById('prevImageBtn');
+        const nextImageBtn = document.getElementById('nextImageBtn');
+        const startPresentationBtn = document.getElementById('startPresentationBtn');
+        const startFromCurrentBtn = document.getElementById('startFromCurrentBtn');
+        const presentationContainer = document.getElementById('presentationContainer');
+        const presentationImage = document.getElementById('presentationImage');
+        const currentImageTitle = document.getElementById('currentImageTitle');
+        const brushToggleBtn = document.getElementById('brushToggleBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const exitPresentationBtn = document.getElementById('exitPresentationBtn');
+        const presentationPrevBtn = document.getElementById('presentationPrevBtn');
+        const presentationNextBtn = document.getElementById('presentationNextBtn');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const brushControls = document.getElementById('brushControls');
+        const brushSize = document.getElementById('brushSize');
+        const colorPalette = document.getElementById('colorPalette');
+        const clearCanvas = document.getElementById('clearCanvas');
+        const closeBrushControls = document.getElementById('closeBrushControls');
+        const closePanelBtn = document.getElementById('closePanelBtn');
+        const imageCounter = document.getElementById('imageCounter');
+        
+        // 事件监听器
+        uploadButton.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(0, 0, 0, 0.4)';
+            uploadArea.style.border = '2px dashed #4cc9f0';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'rgba(0, 0, 0, 0.2)';
+            uploadArea.style.border = '2px solid transparent';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'rgba(0, 0, 0, 0.2)';
+            uploadArea.style.border = '2px solid transparent';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+        
+        prevBtnMain.addEventListener('click', showPreviousImage);
+        nextBtnMain.addEventListener('click', showNextImage);
+        prevImageBtn.addEventListener('click', showPreviousImage);
+        nextImageBtn.addEventListener('click', showNextImage);
+        startPresentationBtn.addEventListener('click', () => enterPresentationMode(0));
+        startFromCurrentBtn.addEventListener('click', () => enterPresentationMode(currentImageIndex));
+        
+        brushToggleBtn.addEventListener('click', toggleBrush);
+        prevBtn.addEventListener('click', showPreviousImage);
+        nextBtn.addEventListener('click', showNextImage);
+        exitPresentationBtn.addEventListener('click', exitPresentationMode);
+        presentationPrevBtn.addEventListener('click', showPreviousImage);
+        presentationNextBtn.addEventListener('click', showNextImage);
+        clearCanvas.addEventListener('click', clearDrawingCanvas);
+        closeBrushControls.addEventListener('click', hideBrushControls);
+        closePanelBtn.addEventListener('click', hideBrushControls);
+        
+        // 检测移动设备
+        function detectMobile() {
+            isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            return isMobile;
+        }
+        
+        // 处理文件上传
+        async function handleFileUpload(file) {
+            // 显示文件信息
+            fileInfo.style.display = 'block';
+            fileName.textContent = file.name;
+            fileSize.textContent = ` (${formatFileSize(file.size)})`;
+            fileDetails.innerHTML = `<i class="fas fa-info-circle"></i> 文件类型: ${file.type || '未知'}`;
+            
+            // 显示加载动画
+            loading.style.display = 'block';
+            mainContent.style.display = 'none';
+            
+            try {
+                // 使用JSZip解压文件
+                const zip = new JSZip();
+                const zipData = await zip.loadAsync(file);
+                
+                // 提取图片文件并按数字顺序排序
+                const imageFiles = [];
+                
+                for (const [filename, fileData] of Object.entries(zipData.files)) {
+                    // 检查是否为图片文件
+                    if (!fileData.dir && /\.(png|jpg|jpeg|gif|bmp|webp)$/i.test(filename)) {
+                        imageFiles.push({
+                            name: filename,
+                            data: fileData
+                        });
+                    }
+                }
+                
+                // 按文件名中的数字排序
+                imageFiles.sort((a, b) => {
+                    const numA = parseInt(a.name.match(/\d+/)?.[0] || '0');
+                    const numB = parseInt(b.name.match(/\d+/)?.[0] || '0');
+                    return numA - numB;
+                });
+                
+                // 将图片数据转换为DataURL
+                images = [];
+                
+                for (const imageFile of imageFiles) {
+                    const blob = await imageFile.data.async('blob');
+                    const dataUrl = URL.createObjectURL(blob);
+                    
+                    // 获取图片尺寸
+                    const img = new Image();
+                    await new Promise((resolve) => {
+                        img.onload = resolve;
+                        img.src = dataUrl;
+                    });
+                    
+                    images.push({
+                        name: imageFile.name,
+                        url: dataUrl,
+                        index: images.length + 1,
+                        width: img.width,
+                        height: img.height,
+                        size: blob.size
+                    });
+                }
+                
+                // 隐藏加载动画
+                loading.style.display = 'none';
+                
+                if (images.length === 0) {
+                    alert('LSBOX文件中未找到图片文件！');
+                    return;
+                }
+                
+                // 显示主内容区域
+                mainContent.style.display = 'block';
+                
+                // 更新文件详情信息
+                fileDetails.innerHTML = `
+                    <i class="fas fa-info-circle"></i> 已找到 ${images.length} 张图片，文件解压成功
+                `;
+                
+                // 显示缩略图和主图片
+                displayThumbnails();
+                updateMainImage();
+                
+                // 初始化颜色选择器
+                initColorPalette();
+                
+                console.log(`成功加载 ${images.length} 张图片`);
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                console.error('解压文件时出错:', error);
+                alert('无法解压文件，请确保上传的是有效的.lsbox文件（ZIP格式）');
+                fileDetails.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 文件解压失败: ${error.message}`;
+            }
+        }
+        
+        // 显示缩略图
+        function displayThumbnails() {
+            thumbnailList.innerHTML = '';
+            thumbnailCount.textContent = `${images.length} 张图片`;
+            
+            images.forEach((image, index) => {
+                const thumbnailItem = document.createElement('div');
+                thumbnailItem.className = 'thumbnail-item';
+                if (index === currentImageIndex) thumbnailItem.classList.add('active');
+                
+                thumbnailItem.innerHTML = `
+                    <div class="thumbnail-img-container">
+                        <img src="${image.url}" alt="${image.name}" loading="lazy">
+                    </div>
+                    <div class="thumbnail-info">
+                        <div class="thumbnail-index">图片 ${image.index}</div>
+                        <div class="thumbnail-size">${image.width}×${image.height}</div>
+                    </div>
+                `;
+                
+                thumbnailItem.addEventListener('click', () => {
+                    // 更新当前图片索引
+                    currentImageIndex = index;
+                    
+                    // 更新主图片
+                    updateMainImage();
+                    
+                    // 更新缩略图选中状态
+                    updateThumbnailSelection();
+                });
+                
+                thumbnailList.appendChild(thumbnailItem);
+            });
+        }
+        
+        // 更新缩略图选中状态
+        function updateThumbnailSelection() {
+            document.querySelectorAll('.thumbnail-item').forEach((item, index) => {
+                if (index === currentImageIndex) {
+                    item.classList.add('active');
+                    
+                    // 滚动到选中的缩略图
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // 更新主图片
+        function updateMainImage() {
+            if (images.length === 0) return;
+            
+            const image = images[currentImageIndex];
+            mainImage.src = image.url;
+            mainImageTitle.textContent = `图片 ${image.index}`;
+            mainImageInfo.textContent = `尺寸: ${image.width}×${image.height}`;
+            
+            // 更新缩略图选中状态
+            updateThumbnailSelection();
+        }
+        
+        // 进入放映模式
+        function enterPresentationMode(startIndex) {
+            if (images.length === 0) {
+                alert('请先上传包含图片的LSBOX文件');
+                return;
+            }
+            
+            // 设置当前图片索引
+            currentImageIndex = startIndex;
+            
+            presentationContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // 检测是否为移动设备
+            detectMobile();
+            
+            // 如果是移动设备，添加横屏提示
+            if (isMobile && window.innerHeight > window.innerWidth) {
+                setTimeout(() => {
+                    alert('建议将设备横屏以获得更好的放映体验');
+                }, 500);
+            }
+            
+            // 请求全屏
+            if (presentationContainer.requestFullscreen) {
+                presentationContainer.requestFullscreen();
+            } else if (presentationContainer.webkitRequestFullscreen) {
+                presentationContainer.webkitRequestFullscreen();
+            } else if (presentationContainer.msRequestFullscreen) {
+                presentationContainer.msRequestFullscreen();
+            }
+            
+            // 重置画笔状态
+            isBrushActive = false;
+            brushToggleBtn.classList.remove('active');
+            canvasContainer.style.display = 'none';
+            brushControls.style.display = 'none';
+            
+            // 初始化画布
+            initDrawingCanvas();
+            
+            // 显示当前图片
+            updatePresentationImage();
+        }
+        
+        // 退出放映模式
+        function exitPresentationMode() {
+            // 退出全屏
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            
+            presentationContainer.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // 重置画笔状态
+            isBrushActive = false;
+            brushToggleBtn.classList.remove('active');
+            
+            // 重置画布
+            if (canvas && ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        
+        // 切换画笔工具
+        function toggleBrush() {
+            isBrushActive = !isBrushActive;
+            
+            if (isBrushActive) {
+                // 激活画笔
+                brushToggleBtn.classList.add('active');
+                canvasContainer.style.display = 'block';
+                brushControls.style.display = 'flex';
+                
+                // 启用画布事件
+                enableCanvasEvents();
+            } else {
+                // 禁用画笔
+                brushToggleBtn.classList.remove('active');
+                canvasContainer.style.display = 'none';
+                brushControls.style.display = 'none';
+                
+                // 禁用画布事件
+                disableCanvasEvents();
+            }
+        }
+        
+        // 隐藏画笔控制面板
+        function hideBrushControls() {
+            // 隐藏画笔控制面板
+            brushControls.style.display = 'none';
+            
+            // 但保持画笔激活状态，这样用户可以在选择颜色后继续绘画
+            // 不需要禁用画笔，只是隐藏控制面板
+            
+            // 注意：我们不改变isBrushActive状态，只是隐藏面板
+            // 画笔仍然可以继续使用
+        }
+        
+        // 显示上一张图片
+        function showPreviousImage() {
+            if (images.length === 0) return;
+            
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            updateMainImage();
+            updatePresentationImage();
+        }
+        
+        // 显示下一张图片
+        function showNextImage() {
+            if (images.length === 0) return;
+            
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            updateMainImage();
+            updatePresentationImage();
+        }
+        
+        // 更新放映图片
+        function updatePresentationImage() {
+            if (images.length === 0) return;
+            
+            const image = images[currentImageIndex];
+            presentationImage.src = image.url;
+            currentImageTitle.textContent = `图片 ${image.index}`;
+            imageCounter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+            
+            // 清除画布
+            if (canvas && ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        
+        // 初始化颜色选择器
+        function initColorPalette() {
+            colorPalette.innerHTML = '';
+            
+            presetColors.forEach(color => {
+                const colorOption = document.createElement('div');
+                colorOption.className = 'color-option';
+                colorOption.style.backgroundColor = color;
+                
+                // 第一个颜色设为默认选中
+                if (color === '#ff0000') {
+                    colorOption.classList.add('selected');
+                }
+                
+                colorOption.addEventListener('click', () => {
+                    // 移除所有颜色的选中状态
+                    document.querySelectorAll('.color-option').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // 为当前颜色添加选中状态
+                    colorOption.classList.add('selected');
+                    
+                    // 设置画笔颜色
+                    if (ctx) {
+                        ctx.strokeStyle = color;
+                    }
+                    
+                    // 选择颜色后自动关闭控制面板（可选）
+                    // 可以根据需要注释掉下面这行
+                    setTimeout(() => {
+                        hideBrushControls();
+                    }, 300);
+                });
+                
+                colorPalette.appendChild(colorOption);
+            });
+        }
+        
+        // 初始化画布 - 修复横屏问题
+        function initDrawingCanvas() {
+            canvas = document.getElementById('drawingCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置画布大小与图片容器相同
+            const container = document.querySelector('.presentation-body');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            // 画笔设置
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#ff0000'; // 默认红色
+            ctx.lineWidth = brushSize.value;
+            
+            // 画笔设置变化
+            brushSize.addEventListener('input', () => {
+                ctx.lineWidth = brushSize.value;
+            });
+        }
+        
+        // 启用画布事件 - 修复横屏坐标问题
+        function enableCanvasEvents() {
+            if (!canvas) return;
+            
+            // 移除现有事件监听器（避免重复绑定）
+            canvas.removeEventListener('mousedown', startDrawing);
+            canvas.removeEventListener('mousemove', draw);
+            canvas.removeEventListener('mouseup', stopDrawing);
+            canvas.removeEventListener('mouseout', stopDrawing);
+            canvas.removeEventListener('touchstart', startDrawingTouch);
+            canvas.removeEventListener('touchmove', drawTouch);
+            canvas.removeEventListener('touchend', stopDrawing);
+            
+            // 绑定新的事件监听器
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            canvas.addEventListener('touchstart', startDrawingTouch);
+            canvas.addEventListener('touchmove', drawTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+        
+        // 禁用画布事件
+        function disableCanvasEvents() {
+            if (!canvas) return;
+            
+            canvas.removeEventListener('mousedown', startDrawing);
+            canvas.removeEventListener('mousemove', draw);
+            canvas.removeEventListener('mouseup', stopDrawing);
+            canvas.removeEventListener('mouseout', stopDrawing);
+            canvas.removeEventListener('touchstart', startDrawingTouch);
+            canvas.removeEventListener('touchmove', drawTouch);
+            canvas.removeEventListener('touchend', stopDrawing);
+        }
+        
+        // 开始绘制（鼠标）- 修复横屏坐标问题
+        function startDrawing(e) {
+            if (!isBrushActive) return;
+            
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            
+            // 修复横屏坐标转换
+            let clientX, clientY;
+            
+            if (isMobile && window.innerHeight > window.innerWidth) {
+                // 竖屏模式
+                clientX = e.clientX;
+                clientY = e.clientY;
+            } else {
+                // 横屏模式或桌面模式
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            lastX = clientX - rect.left;
+            lastY = clientY - rect.top;
+        }
+        
+        // 开始绘制（触摸）- 修复横屏坐标问题
+        function startDrawingTouch(e) {
+            if (!isBrushActive) return;
+            
+            e.preventDefault();
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            
+            // 修复横屏坐标转换
+            let clientX, clientY;
+            
+            if (isMobile && window.innerHeight > window.innerWidth) {
+                // 竖屏模式
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else {
+                // 横屏模式或桌面模式
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            }
+            
+            lastX = clientX - rect.left;
+            lastY = clientY - rect.top;
+        }
+        
+        // 绘制（鼠标）- 修复横屏坐标问题
+        function draw(e) {
+            if (!isBrushActive || !isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // 修复横屏坐标转换
+            let clientX, clientY;
+            
+            if (isMobile && window.innerHeight > window.innerWidth) {
+                // 竖屏模式
+                clientX = e.clientX;
+                clientY = e.clientY;
+            } else {
+                // 横屏模式或桌面模式
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            lastX = x;
+            lastY = y;
+        }
+        
+        // 绘制（触摸）- 修复横屏坐标问题
+        function drawTouch(e) {
+            if (!isBrushActive || !isDrawing) return;
+            
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            
+            // 修复横屏坐标转换
+            let clientX, clientY;
+            
+            if (isMobile && window.innerHeight > window.innerWidth) {
+                // 竖屏模式
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else {
+                // 横屏模式或桌面模式
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            }
+            
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            lastX = x;
+            lastY = y;
+        }
+        
+        // 停止绘制
+        function stopDrawing() {
+            isDrawing = false;
+        }
+        
+        // 清除画布
+        function clearDrawingCanvas() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 窗口大小变化时调整画布 - 修复横屏问题
+        window.addEventListener('resize', () => {
+            if (presentationContainer.style.display === 'flex') {
+                const container = document.querySelector('.presentation-body');
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+            }
+        });
+        
+        // 全屏变化事件
+        document.addEventListener('fullscreenchange', exitFullscreenHandler);
+        document.addEventListener('webkitfullscreenchange', exitFullscreenHandler);
+        document.addEventListener('mozfullscreenchange', exitFullscreenHandler);
+        document.addEventListener('MSFullscreenChange', exitFullscreenHandler);
+        
+        function exitFullscreenHandler() {
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && 
+                !document.msFullscreenElement) {
+                // 用户退出了全屏
+                exitPresentationMode();
+            }
+        }
+        
+        // 初始化：添加示例说明
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('LSBOX图片查看器已加载');
+            console.log('使用说明：上传一个.lsbox文件（ZIP格式），其中包含按顺序命名的图片文件');
+            
+            // 检测设备类型
+            detectMobile();
+        });
+    </script>
+</body>
+</html>
