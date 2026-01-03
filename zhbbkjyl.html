@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -45,6 +45,91 @@
             font-size: 1.2rem;
             color: #a0a0c0;
             margin-bottom: 20px;
+        }
+        
+        /* 标签栏样式 - 新增 */
+        .tab-bar {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px 12px 0 0;
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(76, 201, 240, 0.3);
+            margin-bottom: 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .tab-list {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tab-item {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            position: relative;
+            max-width: 200px;
+            min-width: 120px;
+        }
+        
+        .tab-item:hover {
+            background: rgba(67, 97, 238, 0.2);
+        }
+        
+        .tab-item.active {
+            background: rgba(67, 97, 238, 0.4);
+            border-color: rgba(76, 201, 240, 0.5);
+            box-shadow: 0 -2px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .tab-filename {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        
+        .tab-close {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-close:hover {
+            background: rgba(255, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .tab-add {
+            padding: 10px 20px;
+            background: rgba(76, 201, 240, 0.2);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            border-bottom: none;
+        }
+        
+        .tab-add:hover {
+            background: rgba(76, 201, 240, 0.4);
         }
         
         /* 改进的上传UI */
@@ -144,7 +229,12 @@
         /* PPT样式布局 - 优化版 */
         .main-content {
             display: none;
-            margin-top: 30px;
+            margin-top: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0 12px 12px 12px;
+            overflow: hidden;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            border-top: none;
         }
         
         .ppt-container {
@@ -152,10 +242,7 @@
             gap: 20px;
             height: 70vh;
             min-height: 600px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .thumbnail-sidebar {
@@ -695,6 +782,15 @@
         
         /* 移动端横屏适配 - 修复功能键失效问题 */
         @media (max-width: 1024px) {
+            .tab-bar {
+                padding: 8px 10px;
+            }
+            
+            .tab-item {
+                padding: 8px 15px;
+                min-width: 100px;
+            }
+            
             .ppt-container {
                 flex-direction: column;
                 height: auto;
@@ -769,6 +865,21 @@
                 font-size: 1.5rem;
             }
             
+            .tab-bar {
+                padding: 6px 8px;
+            }
+            
+            .tab-item {
+                padding: 6px 12px;
+                min-width: 80px;
+                font-size: 0.9rem;
+            }
+            
+            .tab-add {
+                padding: 6px 12px;
+                width: 40px;
+            }
+            
             .ppt-container {
                 padding: 10px;
             }
@@ -836,7 +947,17 @@
             <p class="subtitle">上传.lsbox文件（ZIP格式），浏览图片并使用放映模式进行演示</p>
         </header>
         
-        <section class="upload-section">
+        <!-- 新增：标签栏 -->
+        <div class="tab-bar" id="tabBar">
+            <div class="tab-list" id="tabList">
+                <!-- 标签将通过JS动态添加 -->
+            </div>
+            <div class="tab-add" id="addTab">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+        
+        <section class="upload-section" id="uploadSection">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">
                     <i class="fas fa-file-archive"></i>
@@ -992,8 +1113,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // 全局变量
-        let images = [];
-        let currentImageIndex = 0;
+        let files = []; // 存储所有打开的文件信息
+        let currentFileIndex = 0; // 当前文件索引
+        let currentImageIndex = 0; // 当前图片索引（在当前文件中）
         let isDrawing = false;
         let isBrushActive = false;
         let canvas, ctx;
@@ -1019,12 +1141,16 @@
         const fileInput = document.getElementById('fileInput');
         const uploadButton = document.getElementById('uploadButton');
         const uploadArea = document.getElementById('uploadArea');
+        const uploadSection = document.getElementById('uploadSection');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
         const fileDetails = document.getElementById('fileDetails');
         const loading = document.getElementById('loading');
         const mainContent = document.getElementById('mainContent');
+        const tabBar = document.getElementById('tabBar');
+        const tabList = document.getElementById('tabList');
+        const addTab = document.getElementById('addTab');
         const thumbnailCount = document.getElementById('thumbnailCount');
         const thumbnailList = document.getElementById('thumbnailList');
         const mainImageTitle = document.getElementById('mainImageTitle');
@@ -1056,6 +1182,8 @@
         
         // 事件监听器
         uploadButton.addEventListener('click', () => fileInput.click());
+        addTab.addEventListener('click', () => fileInput.click());
+        
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.style.background = 'rgba(0, 0, 0, 0.4)';
@@ -1109,15 +1237,8 @@
         
         // 处理文件上传
         async function handleFileUpload(file) {
-            // 显示文件信息
-            fileInfo.style.display = 'block';
-            fileName.textContent = file.name;
-            fileSize.textContent = ` (${formatFileSize(file.size)})`;
-            fileDetails.innerHTML = `<i class="fas fa-info-circle"></i> 文件类型: ${file.type || '未知'}`;
-            
             // 显示加载动画
             loading.style.display = 'block';
-            mainContent.style.display = 'none';
             
             try {
                 // 使用JSZip解压文件
@@ -1145,7 +1266,7 @@
                 });
                 
                 // 将图片数据转换为DataURL
-                images = [];
+                const images = [];
                 
                 for (const imageFile of imageFiles) {
                     const blob = await imageFile.data.async('blob');
@@ -1168,21 +1289,37 @@
                     });
                 }
                 
-                // 隐藏加载动画
-                loading.style.display = 'none';
-                
                 if (images.length === 0) {
                     alert('LSBOX文件中未找到图片文件！');
+                    loading.style.display = 'none';
                     return;
                 }
                 
-                // 显示主内容区域
-                mainContent.style.display = 'block';
+                // 创建文件对象
+                const fileObj = {
+                    id: Date.now(), // 使用时间戳作为唯一ID
+                    name: file.name,
+                    size: file.size,
+                    images: images
+                };
                 
-                // 更新文件详情信息
-                fileDetails.innerHTML = `
-                    <i class="fas fa-info-circle"></i> 已找到 ${images.length} 张图片，文件解压成功
-                `;
+                // 将文件添加到files数组
+                files.push(fileObj);
+                currentFileIndex = files.length - 1;
+                currentImageIndex = 0;
+                
+                // 隐藏加载动画
+                loading.style.display = 'none';
+                
+                // 如果这是第一个文件，隐藏上传区域，显示标签栏和主内容
+                if (files.length === 1) {
+                    uploadSection.style.display = 'none';
+                    tabBar.style.display = 'flex';
+                    mainContent.style.display = 'block';
+                }
+                
+                // 更新标签栏
+                updateTabBar();
                 
                 // 显示缩略图和主图片
                 displayThumbnails();
@@ -1191,18 +1328,126 @@
                 // 初始化颜色选择器
                 initColorPalette();
                 
-                console.log(`成功加载 ${images.length} 张图片`);
+                console.log(`成功加载 ${images.length} 张图片，文件名: ${file.name}`);
                 
             } catch (error) {
                 loading.style.display = 'none';
                 console.error('解压文件时出错:', error);
                 alert('无法解压文件，请确保上传的是有效的.lsbox文件（ZIP格式）');
-                fileDetails.innerHTML = `<i class="fas fa-exclamation-triangle"></i> 文件解压失败: ${error.message}`;
             }
+        }
+        
+        // 更新标签栏
+        function updateTabBar() {
+            tabList.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const tabItem = document.createElement('div');
+                tabItem.className = 'tab-item';
+                if (index === currentFileIndex) {
+                    tabItem.classList.add('active');
+                }
+                
+                tabItem.innerHTML = `
+                    <div class="tab-filename" title="${file.name}">
+                        <i class="fas fa-file-archive" style="font-size: 0.9rem; margin-right: 5px;"></i>
+                        ${file.name}
+                    </div>
+                    <div class="tab-close" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                
+                // 点击标签切换文件
+                tabItem.addEventListener('click', (e) => {
+                    // 防止点击关闭按钮时触发标签切换
+                    if (!e.target.closest('.tab-close')) {
+                        switchToFile(index);
+                    }
+                });
+                
+                // 关闭按钮事件
+                const closeBtn = tabItem.querySelector('.tab-close');
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeFile(index);
+                });
+                
+                tabList.appendChild(tabItem);
+            });
+            
+            // 添加加号标签
+            tabList.appendChild(addTab);
+            
+            // 滚动到当前标签
+            const activeTab = document.querySelector('.tab-item.active');
+            if (activeTab) {
+                activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            }
+        }
+        
+        // 切换到指定文件
+        function switchToFile(index) {
+            if (index < 0 || index >= files.length) return;
+            
+            currentFileIndex = index;
+            currentImageIndex = 0;
+            
+            // 更新标签栏选中状态
+            updateTabBar();
+            
+            // 显示缩略图和主图片
+            displayThumbnails();
+            updateMainImage();
+        }
+        
+        // 关闭文件
+        function closeFile(index) {
+            if (index < 0 || index >= files.length) return;
+            
+            // 释放文件中的图片URL
+            files[index].images.forEach(img => {
+                URL.revokeObjectURL(img.url);
+            });
+            
+            // 从数组中移除文件
+            files.splice(index, 1);
+            
+            // 如果没有文件了，显示上传区域，隐藏标签栏和主内容
+            if (files.length === 0) {
+                uploadSection.style.display = 'block';
+                tabBar.style.display = 'none';
+                mainContent.style.display = 'none';
+                return;
+            }
+            
+            // 调整当前文件索引
+            if (currentFileIndex >= index) {
+                currentFileIndex = Math.max(0, currentFileIndex - 1);
+            }
+            
+            // 如果当前文件索引超出范围，设置为最后一个文件
+            if (currentFileIndex >= files.length) {
+                currentFileIndex = files.length - 1;
+            }
+            
+            currentImageIndex = 0;
+            
+            // 更新标签栏
+            updateTabBar();
+            
+            // 显示缩略图和主图片
+            displayThumbnails();
+            updateMainImage();
         }
         
         // 显示缩略图
         function displayThumbnails() {
+            if (files.length === 0) return;
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
             thumbnailList.innerHTML = '';
             thumbnailCount.textContent = `${images.length} 张图片`;
             
@@ -1252,6 +1497,11 @@
         
         // 更新主图片
         function updateMainImage() {
+            if (files.length === 0 || !files[currentFileIndex]) return;
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
             if (images.length === 0) return;
             
             const image = images[currentImageIndex];
@@ -1265,8 +1515,16 @@
         
         // 进入放映模式
         function enterPresentationMode(startIndex) {
-            if (images.length === 0) {
+            if (files.length === 0) {
                 alert('请先上传包含图片的LSBOX文件');
+                return;
+            }
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
+            if (images.length === 0) {
+                alert('当前文件中没有图片');
                 return;
             }
             
@@ -1357,18 +1615,16 @@
         
         // 隐藏画笔控制面板
         function hideBrushControls() {
-            // 隐藏画笔控制面板
             brushControls.style.display = 'none';
-            
-            // 但保持画笔激活状态，这样用户可以在选择颜色后继续绘画
-            // 不需要禁用画笔，只是隐藏控制面板
-            
-            // 注意：我们不改变isBrushActive状态，只是隐藏面板
-            // 画笔仍然可以继续使用
         }
         
         // 显示上一张图片
         function showPreviousImage() {
+            if (files.length === 0) return;
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
             if (images.length === 0) return;
             
             currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
@@ -1378,6 +1634,11 @@
         
         // 显示下一张图片
         function showNextImage() {
+            if (files.length === 0) return;
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
             if (images.length === 0) return;
             
             currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -1387,6 +1648,11 @@
         
         // 更新放映图片
         function updatePresentationImage() {
+            if (files.length === 0) return;
+            
+            const currentFile = files[currentFileIndex];
+            const images = currentFile.images;
+            
             if (images.length === 0) return;
             
             const image = images[currentImageIndex];
@@ -1429,7 +1695,6 @@
                     }
                     
                     // 选择颜色后自动关闭控制面板（可选）
-                    // 可以根据需要注释掉下面这行
                     setTimeout(() => {
                         hideBrushControls();
                     }, 300);
