@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧白板 - Longs Studio | 打造极致工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(58, 134, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(131, 56, 236, 0.05) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+        }
+        
+        .logo-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .logo-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+        
+        .announcement-btn {
+            background: linear-gradient(135deg, var(--accent-color), #ff5c8d);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.2);
+        }
+        
+        .announcement-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+        }
+        
+        .hero-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: center;
+        }
+        
+        .hero-content {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .hero-content h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-content h2 span {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero-content p {
+            font-size: 18px;
+            color: var(--gray-color);
+            margin-bottom: 30px;
+        }
+        
+        .hero-image {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .board-visual {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            background: linear-gradient(145deg, #ffffff, #e6e9ef);
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.1),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .board-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .board-tools {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tool {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .board-body {
+            flex-grow: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .board-line {
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+        }
+        
+        .board-line:nth-child(1) {
+            width: 80%;
+        }
+        
+        .board-line:nth-child(2) {
+            width: 60%;
+        }
+        
+        .board-line:nth-child(3) {
+            width: 70%;
+        }
+        
+        .board-line:nth-child(4) {
+            width: 40%;
+        }
+        
+        .download-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: var(--dark-color);
+        }
+        
+        .download-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .download-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .platform-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+        
+        .android .platform-icon {
+            background: linear-gradient(135deg, #3ddc84, #2ab76e);
+        }
+        
+        .windows .platform-icon {
+            background: linear-gradient(135deg, #0078d7, #005a9e);
+        }
+        
+        .download-card h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .download-card p {
+            color: var(--gray-color);
+            margin-bottom: 25px;
+            min-height: 60px;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 16px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            width: 100%;
+            max-width: 250px;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(58, 134, 255, 0.4);
+        }
+        
+        .features-section {
+            margin-bottom: 60px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .feature-card h4 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--dark-color);
+        }
+        
+        .feature-card p {
+            color: var(--gray-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--gray-color);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 40px;
+        }
+        
+        .copyright {
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .hero-content h2 {
+                font-size: 32px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+        }
+        
+        /* 下载链接样式 */
+        .download-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .version-info {
+            font-size: 14px;
+            color: var(--gray-color);
+            margin-top: 10px;
+        }
+        
+        /* 加载动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .delay-1 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+        
+        /* 下载提示样式 */
+        .download-notice {
+            background: rgba(255, 241, 200, 0.8);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: left;
+        }
+        
+        .download-notice i {
+            color: #ff9800;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>智慧白板</h1>
+                    <p>Longs Studio · 打造极致工具</p>
+                </div>
+            </div>
+            <a href="https://longsstudio.github.io/hd.html" target="_blank" class="announcement-btn animate-in">
+                <i class="fas fa-bullhorn"></i>
+                产品公告
+            </a>
+        </header>
+        
+        <section class="hero-section">
+            <div class="hero-content animate-in">
+                <h2>重新定义<span>数字白板</span>体验</h2>
+                <p>智慧白板是一款为现代协作设计的智能工具，结合简洁直观的界面与强大功能，助您轻松实现创意表达、团队协作和高效演示。</p>
+                <p>无论您是在教室、会议室还是远程工作，智慧白板都能为您提供无缝的创作体验。</p>
+            </div>
+            <div class="hero-image">
+                <div class="board-visual animate-in delay-1">
+                    <div class="board-content">
+                        <div class="board-header">
+                            <div class="board-tools">
+                                <div class="tool"><i class="fas fa-pen"></i></div>
+                                <div class="tool"><i class="fas fa-eraser"></i></div>
+                                <div class="tool"><i class="fas fa-shapes"></i></div>
+                                <div class="tool"><i class="fas fa-text-height"></i></div>
+                            </div>
+                            <div class="board-tools">
+                                <div class="tool"><i class="fas fa-users"></i></div>
+                                <div class="tool"><i class="fas fa-cloud-upload-alt"></i></div>
+                            </div>
+                        </div>
+                        <div class="board-body">
+                            <div class="board-line"></div>
+                            <div class="board-line"></div>
+                            <div class="board-line"></div>
+                            <div class="board-line"></div>
+                            <div class="board-line" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="download-section">
+            <h2 class="section-title animate-in">下载智慧白板</h2>
+            <div class="download-cards">
+                <div class="download-card android animate-in">
+                    <div class="platform-icon">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <h3>Android 版本</h3>
+                    <p>适用于手机和平板设备，支持触控笔和手指操作，随时随地记录灵感。</p>
+                    <div class="download-links">
+                        <a href="https://1840761319.v.123yx.com/1840761319/28452828" class="download-btn" id="android-download" target="_blank">
+                            <i class="fas fa-download"></i>
+                            下载 APK 文件
+                        </a>
+                        <div class="download-notice">
+                            <i class="fas fa-info-circle"></i>
+                            如果下载后无法安装，请在设置中开启"允许安装来自未知来源的应用"
+                        </div>
+                        <div class="version-info">版本 2.1.4 | 大小 86.5 MB | Android 7.0+</div>
+                    </div>
+                </div>
+                
+                <div class="download-card windows animate-in delay-1">
+                    <div class="platform-icon">
+                        <i class="fab fa-windows"></i>
+                    </div>
+                    <h3>Windows 版本</h3>
+                    <p>专为Windows系统优化，支持高分辨率屏幕和手写板，提供完整功能体验。</p>
+                    <div class="download-links">
+                        <a href="https://1840761319.v.123yx.com/1840761319/28065207" class="download-btn" id="windows-download" target="_blank">
+                            <i class="fas fa-download"></i>
+                            下载 EXE 文件
+                        </a>
+                        <div class="download-notice">
+                            <i class="fas fa-info-circle"></i>
+                            下载完成后双击安装程序，按照提示完成安装
+                        </div>
+                        <div class="version-info">版本 3.2.0 | 大小 142.3 MB | Windows 10+</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="features-section">
+            <h2 class="section-title animate-in delay-1">核心功能</h2>
+            <div class="features-grid">
+                <div class="feature-card animate-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h4>智能画笔</h4>
+                    <p>多种画笔类型和颜色选择，支持压感和倾斜检测，提供真实的书写和绘画体验。</p>
+                </div>
+                
+                <div class="feature-card animate-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h4>实时协作</h4>
+                    <p>多人同时编辑，实时同步内容变化，支持语音和视频通话集成。</p>
+                </div>
+                
+                <div class="feature-card animate-in delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-shapes"></i>
+                    </div>
+                    <h4>丰富素材</h4>
+                    <p>内置多种形状、图表、贴纸和模板，快速创建专业级白板内容。</p>
+                </div>
+                
+                <div class="feature-card animate-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h4>云端同步</h4>
+                    <p>自动保存到云端，跨设备访问您的工作内容，永不丢失重要创意。</p>
+                </div>
+                
+                <div class="feature-card animate-in delay-1">
+                    <div class="feature-icon">
+                        <i class="fas fa-vector-square"></i>
+                    </div>
+                    <h4>无限画布</h4>
+                    <p>不受限制的创作空间，支持缩放和平移，自由组织您的内容。</p>
+                </div>
+                
+                <div class="feature-card animate-in delay-2">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h4>多种导出格式</h4>
+                    <p>支持导出为图片、PDF、视频等多种格式，方便分享和演示。</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="animate-in delay-2">
+            <div class="logo">
+                <div class="logo-icon" style="width: 40px; height: 40px;">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+                <div class="logo-text">
+                    <h1 style="font-size: 24px;">智慧白板</h1>
+                    <p>Longs Studio · 打造极致工具</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 Longs Studio. 智慧白板是Longs Studio的注册商标。保留所有权利。</p>
+                <p style="margin-top: 5px;">联系我们: contact@longsstudio.com | 反馈建议: feedback@longsstudio.com</p>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-in');
+            animatedElements.forEach(el => {
+                el.style.opacity = '1';
+            });
+            
+            // 添加下载统计（可选）
+            const androidBtn = document.getElementById('android-download');
+            const windowsBtn = document.getElementById('windows-download');
+            
+            androidBtn.addEventListener('click', function() {
+                console.log('Android 下载链接被点击');
+                // 这里可以添加统计代码，如Google Analytics
+            });
+            
+            windowsBtn.addEventListener('click', function() {
+                console.log('Windows 下载链接被点击');
+                // 这里可以添加统计代码，如Google Analytics
+            });
+            
+            // 添加快捷键支持
+            document.addEventListener('keydown', function(e) {
+                // Alt + A 下载 Android 版本
+                if (e.altKey && e.key === 'a') {
+                    androidBtn.click();
+                }
+                // Alt + W 下载 Windows 版本
+                if (e.altKey && e.key === 'w') {
+                    windowsBtn.click();
+                }
+            });
+        });
+        
+        // 显示快捷键提示
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('下载快捷键: Alt+A (Android), Alt+W (Windows)');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
