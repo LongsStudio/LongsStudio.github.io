@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>公告</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+        }
+        
+        /* 加载动画 */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .loading-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #4cc9f0;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 容器 */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 20px 15px;
+        }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 20px 0 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header-icon {
+            font-size: 3rem;
+            color: #4cc9f0;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            color: #a0a0c0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* 公告列表 */
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .announcement-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .announcement-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(76, 201, 240, 0.3);
+        }
+        
+        .announcement-card.highlight {
+            border-left: 5px solid #f72585;
+            background: rgba(247, 37, 133, 0.05);
+        }
+        
+        .announcement-card.warning {
+            border-left: 5px solid #ff9e00;
+            background: rgba(255, 158, 0, 0.05);
+        }
+        
+        .announcement-card.info {
+            border-left: 5px solid #4cc9f0;
+            background: rgba(76, 201, 240, 0.05);
+        }
+        
+        .announcement-card.success {
+            border-left: 5px solid #00b894;
+            background: rgba(0, 184, 148, 0.05);
+        }
+        
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .announcement-time {
+            font-size: 0.85rem;
+            color: #a0a0c0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .announcement-time i {
+            font-size: 0.8rem;
+        }
+        
+        .announcement-type {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .announcement-type.highlight {
+            background: rgba(247, 37, 133, 0.2);
+            color: #f72585;
+        }
+        
+        .announcement-type.warning {
+            background: rgba(255, 158, 0, 0.2);
+            color: #ff9e00;
+        }
+        
+        .announcement-type.info {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+        
+        .announcement-type.success {
+            background: rgba(0, 184, 148, 0.2);
+            color: #00b894;
+        }
+        
+        .announcement-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+            line-height: 1.4;
+        }
+        
+        .announcement-content {
+            font-size: 1rem;
+            color: #d1d1e9;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .announcement-content p {
+            margin-bottom: 10px;
+        }
+        
+        .announcement-content ul, .announcement-content ol {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .announcement-content li {
+            margin-bottom: 5px;
+        }
+        
+        .announcement-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .announcement-author {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .announcement-author i {
+            font-size: 0.9rem;
+        }
+        
+        .announcement-views {
+            font-size: 0.85rem;
+            color: #a0a0c0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            margin-bottom: 10px;
+        }
+        
+        .empty-subtext {
+            font-size: 1rem;
+            color: #888;
+        }
+        
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer a {
+            color: #4cc9f0;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px 0 25px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .announcement-card {
+                padding: 18px;
+            }
+            
+            .announcement-title {
+                font-size: 1.2rem;
+            }
+            
+            .announcement-content {
+                font-size: 0.95rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .announcement-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .announcement-title {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* 刷新按钮 */
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .refresh-btn:active {
+            transform: scale(0.95) rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">加载公告中...</div>
+    </div>
+    
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <h1>LSBOX官方公告</h1>
+            <p>最新动态、版本更新、活动通知和重要信息</p>
+        </div>
+        
+        <!-- 公告列表 -->
+        <div class="announcement-list" id="announcementList">
+            <!-- 公告将通过JS动态添加 -->
+        </div>
+        
+        <!-- 底部 -->
+        <div class="footer">
+            <p>© 2025 Longs Studio | 公告信息实时更新</p>
+            <p>本页面为LSBOX图片查看器的官方公告页面，所有信息均为官方发布</p>
+        </div>
+    </div>
+    
+    <!-- 刷新按钮 -->
+    <button class="refresh-btn" id="refreshBtn">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+    
+    <script>
+        // 模拟公告数据
+        const announcements = [
+            {
+                id: 1,
+                time: "2026-01-9 12:30",
+                type: "highlight",
+                typeText: "重要通知",
+                title: "LSBOX查看器移动版本 v1.0 正式发布",
+                content: "我们很高兴地宣布LSBOX查看器移动版本 V1.0 正式版现已发布！本次更新带来了多项重要改进和新功能：<br><br>1. <strong>全新UI设计</strong>：采用现代化设计语言，界面更加美观易用<br>2. <strong>性能优化</strong>：图片加载速度提升50%，内存占用减少30%<br>3. <strong>新增画笔功能</strong>：支持在放映模式下进行标注和绘图<br>4. <strong>增强的格式支持</strong>：新增对WebP、AVIF等现代图片格式的支持<br>5. <strong>离线模式</strong>：现在即使没有网络连接也能正常使用核心功能<br><br>请前往应用内检查更新，或访问官方网站下载最新版本。",
+                author: "LSBOX开发团队",
+                views: 1250
+            },
+            {
+                id: 2,
+                time: "2025-11-10 09:15",
+                type: "warning",
+                typeText: "系统维护",
+                title: "11月12日凌晨2:00-4:00系统维护通知",
+                content: "为了提升服务质量和系统稳定性，我们将于<strong>2025年11月12日(周日)凌晨2:00至4:00</strong>进行系统维护。<br><br>维护期间，以下服务将受到影响：<br>• 在线更新检查功能可能暂时不可用<br>• 活动页面加载可能会有短暂延迟<br>• 云端同步功能将暂停服务<br><br>维护完成后，所有服务将恢复正常。给您带来的不便，我们深表歉意。",
+                author: "系统管理员",
+                views: 890
+            },
+            {
+                id: 5,
+                time: "2023-10-20 13:10",
+                type: "info",
+                typeText: "教程更新",
+                title: "LSBOX使用教程视频已发布",
+                content: "我们制作了一系列LSBOX图片查看器的使用教程视频，帮助新用户快速上手：<br><br>📹 基础教程：如何导入和查看LSBOX文件<br>📹 进阶教程：放映模式与画笔功能详解<br>📹 技巧分享：10个提升效率的小技巧<br>📹 故障排除：常见问题解决方法<br><br>所有教程视频均可在官方网站的「教程」栏目中观看。",
+                author: "教育团队",
+                views: 1870
+            },
+            {
+                id: 6,
+                time: "2025-10-15 10:05",
+                type: "highlight",
+                typeText: "安全更新",
+                title: "重要安全补丁v1.5.2发布",
+                content: "我们发布了一个重要的安全更新补丁（版本v1.5.2），修复了以下安全问题：<br><br>🔒 修复了LSBOX文件解析过程中的潜在漏洞<br>🔒 增强了图片缓存的安全性<br>🔒 改进了权限管理机制<br><br><strong>强烈建议所有用户立即更新到最新版本</strong>，以确保您的数据安全。您可以在应用内的「我的」页面中检查更新。",
+                author: "安全团队",
+                views: 3210
+            },
+            {
+                id: 7,
+                time: "2025-10-09 15:30",
+                type: "info",
+                typeText: "用户反馈",
+                title: "用户反馈与建议汇总",
+                content: "感谢所有用户向我们提供的宝贵反馈！根据大家的建议，我们计划在未来版本中增加以下功能：<br><br>✓ 云存储支持（预计12月上线）<br>✓ 自定义主题功能（开发中）<br>✓ 批量导出图片功能（规划中）<br>✓ 更多图片编辑工具（调研中）<br><br>如果您有其他建议，欢迎通过「我的」页面中的反馈功能告诉我们。",
+                author: "产品团队",
+                views: 1420
+            },
+            {
+                id: 8,
+                time: "2023-10-01 08:00",
+                type: "success",
+                typeText: "节日祝福",
+                title: "国庆节快乐！",
+                content: "值此国庆佳节，LSBOX开发团队向所有用户致以最诚挚的祝福！<br><br>祝愿伟大的祖国繁荣昌盛，国泰民安！<br>祝愿所有用户节日快乐，阖家幸福！<br><br>为庆祝国庆，10月1日-10月7日期间，所有用户均可免费使用高级功能。",
+                author: "LSBOX全体团队",
+                views: 2890
+            }
+        ];
+
+        // DOM元素
+        const loadingContainer = document.getElementById('loadingContainer');
+        const announcementList = document.getElementById('announcementList');
+        const refreshBtn = document.getElementById('refreshBtn');
+        
+        // 模拟加载过程
+        window.addEventListener('load', () => {
+            // 延迟加载数据，让加载动画显示一会儿
+            setTimeout(() => {
+                loadAnnouncements();
+                loadingContainer.classList.add('hidden');
+            }, 1200);
+        });
+        
+        // 如果页面加载很快，确保加载动画至少显示一定时间
+        setTimeout(() => {
+            if (!loadingContainer.classList.contains('hidden')) {
+                loadAnnouncements();
+                loadingContainer.classList.add('hidden');
+            }
+        }, 3000);
+        
+        // 加载公告
+        function loadAnnouncements() {
+            announcementList.innerHTML = '';
+            
+            if (announcements.length === 0) {
+                // 显示空状态
+                announcementList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="far fa-newspaper"></i>
+                        </div>
+                        <div class="empty-text">暂无公告</div>
+                        <div class="empty-subtext">暂时没有新的公告信息</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 按时间倒序排列（最新的在前）
+            const sortedAnnouncements = [...announcements].sort((a, b) => {
+                return new Date(b.time) - new Date(a.time);
+            });
+            
+            // 渲染公告卡片
+            sortedAnnouncements.forEach(announcement => {
+                const announcementCard = document.createElement('div');
+                announcementCard.className = `announcement-card ${announcement.type}`;
+                
+                // 格式化时间显示
+                const timeText = formatTime(announcement.time);
+                
+                announcementCard.innerHTML = `
+                    <div class="announcement-header">
+                        <div class="announcement-time">
+                            <i class="far fa-clock"></i> ${timeText}
+                        </div>
+                        <div class="announcement-type ${announcement.type}">
+                            ${announcement.typeText}
+                        </div>
+                    </div>
+                    
+                    <div class="announcement-title">
+                        ${announcement.title}
+                    </div>
+                    
+                    <div class="announcement-content">
+                        ${announcement.content}
+                    </div>
+                    
+                    <div class="announcement-footer">
+                        <div class="announcement-author">
+                            <i class="far fa-user"></i> ${announcement.author}
+                        </div>
+                        <div class="announcement-views">
+                            <i class="far fa-eye"></i> ${announcement.views.toLocaleString()} 次查看
+                        </div>
+                    </div>
+                `;
+                
+                announcementList.appendChild(announcementCard);
+            });
+        }
+        
+        // 格式化时间显示
+        function formatTime(timeString) {
+            const date = new Date(timeString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffMins < 1) {
+                return '刚刚';
+            } else if (diffMins < 60) {
+                return `${diffMins}分钟前`;
+            } else if (diffHours < 24) {
+                return `${diffHours}小时前`;
+            } else if (diffDays < 7) {
+                return `${diffDays}天前`;
+            } else {
+                // 显示完整日期
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+        }
+        
+        // 刷新按钮功能
+        refreshBtn.addEventListener('click', function() {
+            // 添加旋转动画
+            this.style.transform = 'rotate(180deg)';
+            
+            // 显示加载动画
+            loadingContainer.classList.remove('hidden');
+            
+            // 模拟重新加载数据
+            setTimeout(() => {
+                // 这里可以实际从服务器获取新数据
+                // 现在只是重新渲染现有数据
+                loadAnnouncements();
+                
+                // 隐藏加载动画
+                loadingContainer.classList.add('hidden');
+                
+                // 恢复按钮状态
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 300);
+                
+                // 显示刷新成功提示
+                showToast('公告已刷新');
+            }, 800);
+        });
+        
+        // 显示Toast提示
+        function showToast(message) {
+            // 创建Toast元素
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%) translateY(100px);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 10px;
+                font-size: 0.95rem;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                border-left: 4px solid #4cc9f0;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // 显示Toast
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            // 3秒后隐藏并移除Toast
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(100px)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 模拟从服务器获取数据（可以替换为真实的API调用）
+        function fetchAnnouncementsFromServer() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(announcements);
+                }, 500);
+            });
+        }
+        
+        // 初始加载
+        loadAnnouncements();
+    </script>
+</body>
+</html>
