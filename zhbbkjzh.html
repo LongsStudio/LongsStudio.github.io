@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>希沃课件转换工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            display: inline-block;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #3498db;
+            border-radius: 10px;
+            padding: 50px 20px;
+            margin: 20px 0;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-zone:hover, .drop-zone.dragover {
+            background-color: #e8f4fc;
+            border-color: #2980b9;
+        }
+        
+        .drop-icon {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .drop-text {
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .drop-hint {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-text {
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .file-list {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .file-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eaeaea;
+            color: #34495e;
+            font-size: 14px;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-item::before {
+            content: "📄";
+            margin-right: 8px;
+        }
+        
+        .success {
+            color: #27ae60;
+        }
+        
+        .error {
+            color: #e74c3c;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(52, 152, 219, 0.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .instructions {
+            background-color: #f1f8ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: left;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #34495e;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">拖入希沃课件转换智慧课件</h1>
+        
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-icon">📁</div>
+            <div class="drop-text">拖放 .enbx 文件到这里</div>
+            <div class="drop-hint">或点击此处选择文件</div>
+            <input type="file" id="fileInput" class="file-input" accept=".enbx">
+        </div>
+        
+        <button class="btn" id="convertBtn" disabled>开始转换</button>
+        
+        <div class="status" id="status">
+            <div class="status-text" id="statusText">等待文件拖入...</div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="file-list" id="fileList"></div>
+        
+        <div class="instructions">
+            <h3>转换说明：</h3>
+            <ul>
+                <li>拖入 .enbx 文件（实际上是伪zip格式）</li>
+                <li>自动提取 SlideThumbnails 文件夹中的图片</li>
+                <li>将 Slide_0.png, Slide1_.png, Slide_2.png 等重命名为 1.png, 2.png, 3.png...</li>
+                <li>添加包含 "1.28" 的 bbh.txt 文件</li>
+                <li>添加包含 "kj" 的 lx.txt 文件</li>
+                <li>打包为 .lsbox 格式文件并自动下载</li>
+            </ul>
+        </div>
+        
+        <footer>
+            本工具完全在浏览器中运行，不会上传您的文件到任何服务器
+        </footer>
+    </div>
+
+    <script>
+        // 引入JSZip库
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        document.head.appendChild(script);
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const convertBtn = document.getElementById('convertBtn');
+            const statusText = document.getElementById('statusText');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const fileList = document.getElementById('fileList');
+            
+            let selectedFile = null;
+            let processing = false;
+            
+            // 处理拖放事件
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+            
+            // 拖放事件处理
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.name.toLowerCase().endsWith('.enbx')) {
+                        handleFile(file);
+                    } else {
+                        showStatus('请拖入 .enbx 格式的文件', 'error');
+                    }
+                }
+            });
+            
+            // 处理文件选择
+            function handleFile(file) {
+                selectedFile = file;
+                convertBtn.disabled = false;
+                
+                // 显示文件信息
+                fileList.innerHTML = `<div class="file-item">${file.name} (${formatFileSize(file.size)})</div>`;
+                fileList.style.display = 'block';
+                
+                showStatus('文件已选择，点击"开始转换"按钮进行处理', 'success');
+            }
+            
+            // 转换按钮点击事件
+            convertBtn.addEventListener('click', async () => {
+                if (!selectedFile || processing) return;
+                
+                processing = true;
+                convertBtn.disabled = true;
+                showStatus('正在处理文件...', '');
+                progressBar.style.display = 'block';
+                updateProgress(10);
+                
+                try {
+                    // 读取.enbx文件（伪zip格式）
+                    updateProgress(20);
+                    const zip = new JSZip();
+                    const enbxContent = await selectedFile.arrayBuffer();
+                    
+                    showStatus('读取课件文件中...', '');
+                    updateProgress(30);
+                    
+                    // 加载.enbx文件
+                    const enbxZip = await JSZip.loadAsync(enbxContent);
+                    
+                    // 查找SlideThumbnails文件夹
+                    const slideThumbnailsFolder = enbxZip.folder('SlideThumbnails');
+                    if (!slideThumbnailsFolder) {
+                        throw new Error('未找到 SlideThumbnails 文件夹');
+                    }
+                    
+                    showStatus('处理图片文件中...', '');
+                    updateProgress(40);
+                    
+                    // 获取所有PNG文件并排序
+                    const pngFiles = [];
+                    slideThumbnailsFolder.forEach((relativePath, file) => {
+                        if (relativePath.toLowerCase().endsWith('.png')) {
+                            pngFiles.push({
+                                name: relativePath,
+                                file: file
+                            });
+                        }
+                    });
+                    
+                    // 按数字顺序排序图片文件
+                    pngFiles.sort((a, b) => {
+                        const numA = extractNumberFromFileName(a.name);
+                        const numB = extractNumberFromFileName(b.name);
+                        return numA - numB;
+                    });
+                    
+                    showStatus(`找到 ${pngFiles.length} 个图片文件，正在重命名...`, '');
+                    updateProgress(60);
+                    
+                    // 创建新的zip文件
+                    const newZip = new JSZip();
+                    
+                    // 添加重命名后的图片文件
+                    for (let i = 0; i < pngFiles.length; i++) {
+                        const pngFile = pngFiles[i];
+                        const newName = `${i + 1}.png`;
+                        const fileData = await pngFile.file.async('blob');
+                        newZip.file(newName, fileData);
+                    }
+                    
+                    showStatus('添加必要文件...', '');
+                    updateProgress(80);
+                    
+                    // 添加bbh.txt文件
+                    newZip.file('bbh.txt', '1.28');
+                    
+                    // 添加lx.txt文件
+                    newZip.file('lx.txt', 'kj');
+                    
+                    showStatus('生成最终文件...', '');
+                    updateProgress(90);
+                    
+                    // 生成zip文件
+                    const zipBlob = await newZip.generateAsync({type: 'blob'});
+                    
+                    // 创建下载链接
+                    const downloadUrl = URL.createObjectURL(zipBlob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    
+                    // 获取原始文件名（不包含扩展名）
+                    const originalName = selectedFile.name.replace(/\.enbx$/i, '');
+                    a.download = `${originalName}.lsbox`;
+                    
+                    // 触发下载
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    // 释放URL对象
+                    URL.revokeObjectURL(downloadUrl);
+                    
+                    updateProgress(100);
+                    showStatus('转换完成！文件已下载为 .lsbox 格式', 'success');
+                    
+                } catch (error) {
+                    console.error('转换过程中出现错误:', error);
+                    showStatus(`转换失败: ${error.message}`, 'error');
+                } finally {
+                    processing = false;
+                    convertBtn.disabled = false;
+                    
+                    // 3秒后重置进度条
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }, 3000);
+                }
+            });
+            
+            // 从文件名中提取数字
+            function extractNumberFromFileName(fileName) {
+                // 匹配文件名中的数字
+                const matches = fileName.match(/\d+/);
+                return matches ? parseInt(matches[0]) : 0;
+            }
+            
+            // 显示状态信息
+            function showStatus(message, type) {
+                statusText.innerHTML = message;
+                statusText.className = 'status-text';
+                
+                if (type === 'success') {
+                    statusText.classList.add('success');
+                } else if (type === 'error') {
+                    statusText.classList.add('error');
+                }
+            }
+            
+            // 更新进度条
+            function updateProgress(percent) {
+                progressFill.style.width = `${percent}%`;
+            }
+            
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // 检查JSZip库是否加载完成
+            function checkJSZipLoaded() {
+                if (typeof JSZip === 'undefined') {
+                    setTimeout(checkJSZipLoaded, 100);
+                } else {
+                    showStatus('转换工具已就绪，请拖入.enbx文件', 'success');
+                }
+            }
+            
+            // 初始化时检查JSZip库
+            checkJSZipLoaded();
+        });
+    </script>
+</body>
+</html>
