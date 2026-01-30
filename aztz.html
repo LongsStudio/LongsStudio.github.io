@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>横向消息通知工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .notification-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-bar {
+            position: relative;
+            background-color: #f8f9fa;
+            padding: 15px;
+            overflow: hidden;
+            height: 110px;
+        }
+        
+        .notification-track {
+            display: flex;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            transition: transform 0.5s ease;
+        }
+        
+        .notification {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            margin-right: 20px;
+            border-radius: 8px;
+            min-width: 280px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .notification i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+        }
+        
+        .notification-content {
+            flex-grow: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .notification-message {
+            font-size: 0.95rem;
+            color: #555;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 3px;
+        }
+        
+        .success {
+            background-color: #e8f6ef;
+            border-left: 4px solid #2ecc71;
+            color: #27ae60;
+        }
+        
+        .error {
+            background-color: #fdeded;
+            border-left: 4px solid #e74c3c;
+            color: #c0392b;
+        }
+        
+        .warning {
+            background-color: #fef9e7;
+            border-left: 4px solid #f39c12;
+            color: #d68910;
+        }
+        
+        .info {
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            color: #2980b9;
+        }
+        
+        .auto-scroll-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .auto-scroll-indicator i {
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="notification-container">
+        <div class="notification-bar">
+            <div class="notification-track" id="notificationTrack">
+                <!-- 通知消息将通过JavaScript动态添加 -->
+            </div>
+        </div>
+        <div class="auto-scroll-indicator">
+            <i class="fas fa-exchange-alt"></i> 自动滚动消息通知
+        </div>
+    </div>
+
+    <script>
+        // 消息数据
+        const notifications = [
+            { id: 1, type: 'success', title: '智慧白板更新', message: '软件版本需要即使检测更新', time: '刚刚' },
+            { id: 2, type: 'error', title: '安全中心', message: '经常更换密码保证账号安全', time: '5分钟前' },
+            { id: 3, type: 'warning', title: '智慧白板安卓', message: '软件如果出现问题请反馈', time: '30分钟前' },
+            { id: 4, type: 'info', title: '新功能发布', message: '我们刚刚发布了新的协作工具', time: '2小时前' }
+        ];
+        
+        // DOM元素
+        const notificationTrack = document.getElementById('notificationTrack');
+        
+        // 状态变量
+        let currentPosition = 0;
+        let scrollInterval;
+        let scrollSpeed = 4000; // 4秒切换一次
+        
+        // 初始化
+        function init() {
+            renderNotifications();
+            startAutoScroll();
+            updateTrackWidth();
+        }
+        
+        // 渲染通知
+        function renderNotifications() {
+            notificationTrack.innerHTML = '';
+            
+            notifications.forEach(notification => {
+                const notificationElement = createNotificationElement(notification);
+                notificationTrack.appendChild(notificationElement);
+            });
+        }
+        
+        // 创建通知元素
+        function createNotificationElement(notification) {
+            const notificationElement = document.createElement('div');
+            notificationElement.className = `notification ${notification.type}`;
+            notificationElement.dataset.id = notification.id;
+            
+            // 根据类型设置图标
+            let iconClass;
+            switch(notification.type) {
+                case 'success': iconClass = 'fas fa-check-circle'; break;
+                case 'error': iconClass = 'fas fa-exclamation-circle'; break;
+                case 'warning': iconClass = 'fas fa-exclamation-triangle'; break;
+                case 'info': iconClass = 'fas fa-info-circle'; break;
+                default: iconClass = 'fas fa-bell';
+            }
+            
+            notificationElement.innerHTML = `
+                <i class="${iconClass}"></i>
+                <div class="notification-content">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-time">${notification.time}</div>
+                </div>
+            `;
+            
+            return notificationElement;
+        }
+        
+        // 更新轨道宽度
+        function updateTrackWidth() {
+            const notificationElements = document.querySelectorAll('.notification');
+            const totalWidth = Array.from(notificationElements).reduce((total, notification) => {
+                const style = window.getComputedStyle(notification);
+                const marginRight = parseFloat(style.marginRight) || 0;
+                return total + notification.offsetWidth + marginRight;
+            }, 0);
+            
+            notificationTrack.style.width = `${totalWidth}px`;
+        }
+        
+        // 开始自动滚动
+        function startAutoScroll() {
+            if (scrollInterval) clearInterval(scrollInterval);
+            
+            scrollInterval = setInterval(() => {
+                scrollNext();
+            }, scrollSpeed);
+        }
+        
+        // 滚动到下一个通知
+        function scrollNext() {
+            const notificationElements = document.querySelectorAll('.notification');
+            if (notificationElements.length === 0) return;
+            
+            const containerWidth = notificationTrack.parentElement.offsetWidth;
+            let accumulatedWidth = 0;
+            
+            // 找到当前显示在视图中的最后一个通知
+            for (let i = 0; i < notificationElements.length; i++) {
+                const notification = notificationElements[i];
+                const style = window.getComputedStyle(notification);
+                const marginRight = parseFloat(style.marginRight) || 0;
+                const notificationWidth = notification.offsetWidth + marginRight;
+                
+                if (accumulatedWidth + notificationWidth > currentPosition + containerWidth) {
+                    // 滚动到这个通知的开始位置
+                    currentPosition = accumulatedWidth;
+                    updateTrackPosition();
+                    return;
+                }
+                
+                accumulatedWidth += notificationWidth;
+            }
+            
+            // 如果已经到达末尾，回到开始
+            currentPosition = 0;
+            updateTrackPosition();
+        }
+        
+        // 更新轨道位置
+        function updateTrackPosition() {
+            const trackWidth = notificationTrack.offsetWidth;
+            const containerWidth = notificationTrack.parentElement.offsetWidth;
+            
+            // 计算最大滚动位置
+            const maxScroll = Math.max(0, trackWidth - containerWidth);
+            
+            // 确保当前位置在有效范围内
+            currentPosition = Math.min(currentPosition, maxScroll);
+            
+            // 应用变换
+            notificationTrack.style.transform = `translateX(-${currentPosition}px)`;
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', init);
+        
+        // 窗口大小变化时更新布局
+        window.addEventListener('resize', function() {
+            updateTrackWidth();
+            updateTrackPosition();
+        });
+    </script>
+</body>
+</html>
