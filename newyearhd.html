@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新年红包抽奖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .blocks-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto 30px;
+        }
+        
+        .block {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .block.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FF9800 100%);
+            transform: scale(1.05);
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+        }
+        
+        .block-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .block.active .block-value {
+            color: #d32f2f;
+        }
+        
+        .block-name {
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .block.active .block-name {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(to bottom, #4CAF50, #388E3C);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(to bottom, #666, #444);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .balance {
+            font-size: 1.3rem;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            color: white;
+        }
+        
+        .balance-amount {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .status {
+            font-size: 1rem;
+            margin: 10px 0;
+            padding: 8px 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .status.available {
+            background: rgba(76, 175, 80, 0.2);
+            color: #C8E6C9;
+        }
+        
+        .status.unavailable {
+            background: rgba(244, 67, 54, 0.2);
+            color: #FFCDD2;
+        }
+        
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .result-content {
+            background: linear-gradient(135deg, #ffd700 0%, #ff9800 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            border: 3px solid #fff;
+            position: relative;
+            animation: modalAppear 0.3s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            color: #c62828;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #c62828;
+            margin: 15px 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-message {
+            font-size: 1.1rem;
+            color: #333;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+        
+        .qr-code {
+            margin: 15px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+            display: block;
+        }
+        
+        .qr-code-text {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #c62828;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .blocks-container {
+                max-width: 300px;
+                gap: 10px;
+            }
+            
+            .block {
+                padding: 15px;
+            }
+            
+            .block-value {
+                font-size: 1.2rem;
+            }
+            
+            .block-name {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🧧 新年红包抽奖 🧧</h1>
+            <p class="subtitle">每天一次机会，点击开始抽奖，赢取新年红包！</p>
+        </div>
+        
+        <div class="blocks-container" id="blocksContainer">
+            <!-- 6个方块将通过JS动态生成 -->
+        </div>
+        
+        <div class="status" id="statusMessage"></div>
+        
+        <div class="controls">
+            <button class="btn" id="startButton">开始抽奖</button>
+        </div>
+        
+        <div class="balance">
+            剩余奖金: <span id="balanceAmount" class="balance-amount">10.00</span> 元
+        </div>
+    </div>
+    
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h2 class="result-title" id="resultTitle">恭喜您！</h2>
+            <div class="result-amount" id="resultAmount">1.00 元</div>
+            <p class="result-message" id="resultMessage">新年快乐！祝您财源广进！</p>
+            
+            <div class="qr-code" id="qrCodeContainer">
+                <div id="qrCodeImage"></div>
+                <div class="qr-code-text" id="qrCodeText">扫码领取红包</div>
+            </div>
+            
+            <button class="btn" id="playAgainBtn">确定</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 奖项配置 - 新年祝福权重最高，现金奖励权重低
+            const prizes = [
+                { 
+                    id: 1,
+                    name: "1元红包", 
+                    value: 1.00, 
+                    weight: 1,  // 权重很低
+                    color: "#FFEB3B", 
+                    message: "恭喜获得1元红包！新年开门红！",
+                    hasPrize: true
+                },
+                { 
+                    id: 2,
+                    name: "0.5元红包", 
+                    value: 0.50, 
+                    weight: 2,
+                    color: "#4CAF50", 
+                    message: "恭喜获得0.5元红包！好运连连！",
+                    hasPrize: true
+                },
+                { 
+                    id: 3,
+                    name: "0.2元红包", 
+                    value: 0.20, 
+                    weight: 3,
+                    color: "#2196F3", 
+                    message: "恭喜获得0.2元红包！福气满满！",
+                    hasPrize: true
+                },
+                { 
+                    id: 4,
+                    name: "0.1元红包", 
+                    value: 0.10, 
+                    weight: 4,
+                    color: "#9C27B0", 
+                    message: "恭喜获得0.1元红包！吉祥如意！",
+                    hasPrize: true
+                },
+                { 
+                    id: 5,
+                    name: "0.01元红包", 
+                    value: 0.01, 
+                    weight: 5,
+                    color: "#FF9800", 
+                    message: "恭喜获得0.01元红包！积少成多！",
+                    hasPrize: true
+                },
+                { 
+                    id: 6,
+                    name: "新年祝福", 
+                    value: 0.00, 
+                    weight: 85,  // 权重最高
+                    color: "#F44336", 
+                    message: "恭喜获得新年祝福！万事如意！",
+                    hasPrize: false
+                }
+            ];
+            
+            // DOM元素
+            const blocksContainer = document.getElementById('blocksContainer');
+            const startButton = document.getElementById('startButton');
+            const statusMessage = document.getElementById('statusMessage');
+            const resultModal = document.getElementById('resultModal');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultAmount = document.getElementById('resultAmount');
+            const resultMessage = document.getElementById('resultMessage');
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            const qrCodeText = document.getElementById('qrCodeText');
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            const closeModal = document.getElementById('closeModal');
+            const balanceAmount = document.getElementById('balanceAmount');
+            
+            // 游戏状态
+            let totalBalance = 10.00;
+            let isSpinning = false;
+            let currentBlockIndex = 0;
+            let blocks = [];
+            let todayDrawn = false;
+            
+            // 检查今天是否已经抽过奖
+            function checkDailyDraw() {
+                try {
+                    const today = new Date().toDateString();
+                    const lastDrawDate = localStorage.getItem('newYearLotteryLastDrawDate');
+                    
+                    if (lastDrawDate === today) {
+                        // 今天已经抽过奖
+                        todayDrawn = true;
+                        startButton.disabled = true;
+                        startButton.textContent = "今日已抽奖";
+                        statusMessage.textContent = "今日已抽奖，请明天再来！";
+                        statusMessage.className = "status unavailable";
+                    } else {
+                        // 今天还没抽过奖
+                        todayDrawn = false;
+                        startButton.disabled = false;
+                        startButton.textContent = "开始抽奖";
+                        statusMessage.textContent = "今日可抽奖，点击开始按钮！";
+                        statusMessage.className = "status available";
+                    }
+                } catch (e) {
+                    console.error("检查抽奖状态失败:", e);
+                    todayDrawn = false;
+                    startButton.disabled = false;
+                    statusMessage.textContent = "点击开始按钮抽奖";
+                    statusMessage.className = "status available";
+                }
+            }
+            
+            // 记录今日抽奖
+            function recordDailyDraw() {
+                try {
+                    const today = new Date().toDateString();
+                    localStorage.setItem('newYearLotteryLastDrawDate', today);
+                    todayDrawn = true;
+                    startButton.disabled = true;
+                    startButton.textContent = "今日已抽奖";
+                    statusMessage.textContent = "今日已抽奖，请明天再来！";
+                    statusMessage.className = "status unavailable";
+                } catch (e) {
+                    console.error("记录抽奖状态失败:", e);
+                }
+            }
+            
+            // 初始化方块
+            function initBlocks() {
+                blocksContainer.innerHTML = '';
+                blocks = [];
+                
+                prizes.forEach((prize, index) => {
+                    const block = document.createElement('div');
+                    block.className = 'block';
+                    block.dataset.index = index;
+                    block.dataset.id = prize.id;
+                    
+                    // 设置方块背景色
+                    block.style.backgroundColor = prize.color;
+                    
+                    // 添加方块内容
+                    block.innerHTML = `
+                        <div class="block-value">${prize.value > 0 ? prize.value.toFixed(2) + '元' : '祝福'}</div>
+                        <div class="block-name">${prize.name}</div>
+                    `;
+                    
+                    blocksContainer.appendChild(block);
+                    blocks.push(block);
+                });
+                
+                // 初始化第一个方块为选中状态
+                updateActiveBlock(0);
+            }
+            
+            // 更新当前选中的方块（通过背景颜色）
+            function updateActiveBlock(index) {
+                // 移除所有方块的active类
+                blocks.forEach(block => {
+                    block.classList.remove('active');
+                });
+                
+                // 为当前方块添加active类
+                if (blocks[index]) {
+                    blocks[index].classList.add('active');
+                    currentBlockIndex = index;
+                }
+            }
+            
+            // 开始抽奖动画
+            function startSpinAnimation() {
+                if (isSpinning || todayDrawn) {
+                    return;
+                }
+                
+                isSpinning = true;
+                startButton.disabled = true;
+                resultModal.style.display = 'none';
+                
+                // 随机选择奖项（根据权重）
+                const selectedPrize = selectPrizeByWeight();
+                const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
+                
+                // 动画参数
+                const baseMoves = 20;
+                const weightFactor = 85 - selectedPrize.weight;
+                const totalMoves = baseMoves + weightFactor;
+                
+                let currentMove = 0;
+                const initialSpeed = 100;
+                let speedIncrease = 0;
+                
+                // 开始移动动画
+                function moveToNextBlock() {
+                    let nextIndex = (currentBlockIndex + 1) % blocks.length;
+                    updateActiveBlock(nextIndex);
+                    
+                    currentMove++;
+                    speedIncrease++;
+                    
+                    // 逐渐减速
+                    const currentSpeed = Math.max(50, initialSpeed + speedIncrease * 10);
+                    
+                    if (currentMove < totalMoves) {
+                        // 继续移动
+                        setTimeout(moveToNextBlock, currentSpeed);
+                    } else {
+                        // 最后快速经过所有方块几次
+                        let finalPasses = 3;
+                        let passCount = 0;
+                        
+                        function finalPass() {
+                            let nextIndex = (currentBlockIndex + 1) % blocks.length;
+                            updateActiveBlock(nextIndex);
+                            
+                            passCount++;
+                            if (passCount < finalPasses * blocks.length) {
+                                setTimeout(finalPass, 50);
+                            } else {
+                                // 最终停在目标方块
+                                updateActiveBlock(targetIndex);
+                                
+                                // 短暂延迟后完成抽奖
+                                setTimeout(() => {
+                                    finishSpin(targetIndex);
+                                }, 500);
+                            }
+                        }
+                        
+                        setTimeout(finalPass, 50);
+                    }
+                }
+                
+                // 开始移动
+                moveToNextBlock();
+            }
+            
+            // 根据权重选择奖项
+            function selectPrizeByWeight() {
+                // 创建权重数组
+                const weightArray = [];
+                prizes.forEach(prize => {
+                    for (let i = 0; i < prize.weight; i++) {
+                        weightArray.push(prize);
+                    }
+                });
+                
+                // 随机选择
+                const randomIndex = Math.floor(Math.random() * weightArray.length);
+                return weightArray[randomIndex];
+            }
+            
+            // 完成抽奖
+            function finishSpin(prizeIndex) {
+                const prize = prizes[prizeIndex];
+                
+                // 记录今日抽奖
+                recordDailyDraw();
+                
+                // 更新余额
+                if (prize.hasPrize) {
+                    totalBalance -= prize.value;
+                    if (totalBalance < 0) totalBalance = 0;
+                }
+                balanceAmount.textContent = totalBalance.toFixed(2);
+                
+                // 显示结果弹窗
+                showResultModal(prize);
+                
+                isSpinning = false;
+            }
+            
+            // 显示结果弹窗
+            function showResultModal(prize) {
+                resultTitle.textContent = prize.hasPrize ? "恭喜您中奖了！" : "新年祝福！";
+                resultAmount.textContent = prize.hasPrize ? prize.value.toFixed(2) + " 元" : "福气满满";
+                resultMessage.textContent = prize.message;
+                
+                // 设置二维码
+                if (prize.hasPrize) {
+                    qrCodeContainer.style.display = 'inline-block';
+                    qrCodeImage.innerHTML = '';
+                    qrCodeText.textContent = "扫码领取红包";
+                } else {
+                    qrCodeContainer.style.display = 'none';
+                }
+                
+                resultModal.style.display = 'flex';
+            }
+            
+            // 页面离开提示
+            function setupPageLeaveWarning() {
+                window.addEventListener('beforeunload', function(e) {
+                    e.preventDefault();
+                    e.returnValue = '明天一定要再回来啊！';
+                    return '明天一定要再回来啊！';
+                });
+            }
+            
+            // 事件监听
+            startButton.addEventListener('click', startSpinAnimation);
+            
+            playAgainBtn.addEventListener('click', function() {
+                resultModal.style.display = 'none';
+            });
+            
+            closeModal.addEventListener('click', function() {
+                resultModal.style.display = 'none';
+            });
+            
+            // 点击弹窗外部关闭弹窗
+            resultModal.addEventListener('click', function(e) {
+                if (e.target === resultModal) {
+                    resultModal.style.display = 'none';
+                }
+            });
+            
+            // 初始化二维码图片
+            qrCodeImage.innerHTML = '';
+            
+            // 初始化游戏
+            function initGame() {
+                initBlocks();
+                checkDailyDraw();
+                setupPageLeaveWarning();
+            }
+            
+            // 页面加载完成后初始化游戏
+            initGame();
+        });
+    </script>
+</body>
+</html>
