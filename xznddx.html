@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>985·211 荣耀闪出 | 终极清北</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: radial-gradient(circle at 30% 10%, #0b1a2e, #030812);
+      font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .glass-card {
+      background: rgba(10, 25, 40, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 56px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 900px;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 2px rgba(255,215,0,0.1) inset;
+      transition: border 0.3s;
+    }
+
+    h1 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: #f0e6c5;
+      text-shadow: 0 0 8px #ffb347, 0 0 20px #aa6f1e;
+      margin-bottom: 30px;
+    }
+
+    .title-main {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffe6a0, #ffcd7e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+      margin-bottom: 6px;
+    }
+
+    .title-sub {
+      font-size: 1rem;
+      color: #b6d0e0;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 18px;
+      border-radius: 40px;
+      border: 1px solid #f1c40f80;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 大学巨幅闪出区域 */
+    .univ-stage {
+      background: rgba(0, 15, 25, 0.7);
+      border-radius: 48px;
+      padding: 35px 20px;
+      margin-bottom: 30px;
+      border: 2px solid #ffd96660;
+      box-shadow: 0 0 30px #ffbf0040, inset 0 0 20px #00000060;
+      transition: 0.2s;
+    }
+
+    .univ-name {
+      font-size: clamp(3.2rem, 15vw, 5.8rem);
+      font-weight: 900;
+      text-align: center;
+      color: #fff9e6;
+      letter-spacing: 6px;
+      word-break: break-word;
+      line-height: 1.2;
+      text-shadow: 0 0 12px #ffe270, 0 0 30px #ffb300, 0 0 60px #b37400;
+      padding: 10px 0;
+      transition: all 0.2s;
+      background: transparent;
+    }
+
+    /* 闪现闪光动画 —— 加快至0.25s，匹配高速闪现 */
+    .flash {
+      animation: brilliantFlash 0.25s ease-out;
+    }
+
+    @keyframes brilliantFlash {
+      0% {
+        background: rgba(255, 235, 120, 0.3);
+        box-shadow: 0 0 50px #ffd966, 0 0 100px #ffb347;
+        text-shadow: 0 0 30px white, 0 0 60px #ffcc00;
+        color: #fffbe3;
+        transform: scale(1.02);
+      }
+      70% {
+        background: rgba(255, 200, 50, 0.1);
+        box-shadow: 0 0 30px #f1c40f, 0 0 70px #e67e22;
+        text-shadow: 0 0 25px #ffe08c;
+      }
+      100% {
+        background: transparent;
+        box-shadow: 0 0 20px #ffbf0040, inset 0 0 20px #00000060;
+        text-shadow: 0 0 12px #ffe270, 0 0 30px #ffb300;
+        transform: scale(1);
+      }
+    }
+
+    /* 最终荣耀 —— 北京大学 或 清华大学 专属皇室风格 */
+    .final {
+      color: #ffd966 !important;
+      text-shadow: 0 0 25px #ffaa33, 0 0 70px #ff7700, 0 0 120px #ff5500 !important;
+      border-bottom: 4px double #ffd700;
+      border-top: 4px double #ffd700;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #1a2c3c, #0e1a26);
+      padding: 15px 5px;
+      transform: scale(1.02);
+      letter-spacing: 12px;
+      transition: 0.3s;
+      animation: finalGlow 1.8s infinite alternate;
+    }
+
+    @keyframes finalGlow {
+      0% { border-color: #ffcc80; box-shadow: 0 0 40px #ffb347, 0 0 80px #ff8c00; }
+      100% { border-color: #fff5c1; box-shadow: 0 0 70px #ffe68f, 0 0 140px #ffaa33; }
+    }
+
+    /* 进度 & 计数器 */
+    .progress-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #c7e0f0;
+      background: rgba(0,0,0,0.35);
+      padding: 16px 28px;
+      border-radius: 50px;
+      margin: 10px 0 30px;
+      border: 1px solid #ffc85740;
+      font-size: 1.2rem;
+      font-weight: 500;
+      backdrop-filter: blur(8px);
+      flex-wrap: wrap;
+    }
+
+    .progress-text {
+      background: #001d2f;
+      padding: 8px 22px;
+      border-radius: 40px;
+      letter-spacing: 2px;
+      box-shadow: inset 0 2px 5px #0000005e, 0 4px 6px #00000030;
+      color: #ffdb8e;
+    }
+
+    .univ-badge {
+      display: flex;
+      gap: 12px;
+    }
+
+    .badge-985, .badge-211 {
+      background: linear-gradient(145deg, #a77b1e, #7e5d1a);
+      padding: 6px 20px;
+      border-radius: 30px;
+      color: #fff6d5;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 1px solid #ffd966;
+      box-shadow: 0 0 8px #f39c12;
+    }
+
+    /* 重置按钮 闪闪惹人爱 */
+    .btn-flash {
+      background: radial-gradient(circle at 30% 10%, #ffd966, #e6b422);
+      border: none;
+      border-radius: 60px;
+      padding: 16px 40px;
+      color: #0a1c28;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: 6px;
+      border: 2px solid #fffed5;
+      box-shadow: 0 0 25px #ffb700, 0 6px 0 #8b5a00;
+      transition: 0.07s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 10px auto 0;
+      width: fit-content;
+    }
+
+    .btn-flash:active {
+      transform: translateY(6px);
+      box-shadow: 0 0 35px #ffcc33, 0 2px 0 #6b4300;
+    }
+
+    .btn-flash:hover {
+      background: radial-gradient(circle at 70% 30%, #ffe086, #f6c445);
+      box-shadow: 0 0 45px #ffbb33, 0 6px 0 #8b5a00;
+    }
+
+    footer {
+      margin-top: 30px;
+      color: #9db9d0;
+      text-align: center;
+      font-size: 0.8rem;
+      border-top: 1px dashed #f1c40f60;
+      padding-top: 18px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 550px) {
+      .glass-card { padding: 30px 18px; }
+      .univ-name { font-size: clamp(2.8rem, 12vw, 4rem); }
+      .progress-area { flex-direction: column; gap: 10px; }
+      .btn-flash { font-size: 1.1rem; padding: 14px 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <h1>
+      <span class="title-main">⚡985·211⚡</span>
+      <span class="title-sub">荣耀一闪 · 顶峰相见</span>
+    </h1>
+
+    <!-- 大学闪现核心舞台 -->
+    <div class="univ-stage">
+      <div id="university" class="univ-name">🎓 准备闪出 🎓</div>
+    </div>
+
+    <!-- 进度 / 标识 / 计数器 -->
+    <div class="progress-area">
+      <span class="badge-985">🔥 985</span>
+      <span id="progress-text" class="progress-text">✨ 待启动 ✨</span>
+      <span class="badge-211">⚡ 211</span>
+    </div>
+
+    <!-- 重置 / 再次闪现 按钮 -->
+    <button id="resetBtn" class="btn-flash">
+      <span>✨ 再闪一次 ✨</span>
+    </button>
+    <footer>
+      ⚡ 逐一闪现 · 压轴必是北大或清华 ⚡
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ---------- 🌟 中国985·211 精英列表（不含清北，留作最终荣耀）🌟 ----------
+      const BASE_985_211 = [
+        "复旦大学", "上海交通大学", "浙江大学", "中国科学技术大学", "南京大学",
+        "西安交通大学", "哈尔滨工业大学", "武汉大学", "华中科技大学", "中山大学",
+        "四川大学", "南开大学", "天津大学", "山东大学", "东南大学",
+        "吉林大学", "厦门大学", "同济大学", "北京师范大学", "国防科技大学",
+        "中国人民大学", "兰州大学", "西北工业大学", "东北大学", "湖南大学",
+        "华南理工大学", "电子科技大学", "重庆大学", "大连理工大学", "中央民族大学",
+        "北京航空航天大学", "北京理工大学", "中国农业大学", "西北农林科技大学"
+      ];  // 全部为985/211顶级高校
+
+      // 最终荣耀候选——北京大学 或 清华大学 （二者随机其一）
+      const FINAL_TWO = ["北京大学", "清华大学"];
+
+      // ---------- 全局变量 ----------
+      let flashInterval = null;         // 计时器id
+      let currentIndex = 0;           // 当前闪到的索引
+      let flashArray = [];           // 当前闪现序列
+
+      // DOM 元素
+      const univEl = document.getElementById('university');
+      const progressEl = document.getElementById('progress-text');
+
+      // ---------- 辅助函数 ----------
+
+      /** 经典洗牌算法 (Fisher–Yates) —— 每次闪现顺序都充满惊喜 */
+      function shuffleArray(arr) {
+        const copy = arr.slice();     
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      /** 构建本次闪现列表： 1.打乱普通高校顺序 2.随机抽取北大或清华作为最终压轴 */
+      function buildFlashList() {
+        const shuffledBase = shuffleArray(BASE_985_211);
+        // 随机选择最终荣耀：北京大学 或者 清华大学
+        const finalSchool = FINAL_TWO[Math.floor(Math.random() * FINAL_TWO.length)];
+        // 拼接：所有普通高校 + 压轴名校
+        return shuffledBase.concat(finalSchool);
+      }
+
+      /** 核心：更新显示——大学名称 + 触发闪光动画 + 最终样式 + 进度 */
+      function updateDisplay(index) {
+        if (!flashArray || index >= flashArray.length) return;
+
+        const univName = flashArray[index];
+        const isFinal = (index === flashArray.length - 1);  // 最后一个即压轴清/北
+
+        // 1. 更新校名
+        univEl.textContent = univName;
+
+        // 2. 💥 强制重绘，触发闪光动画
+        univEl.classList.remove('flash');
+        void univEl.offsetWidth;      // 重绘
+        univEl.classList.add('flash');
+
+        // 3. 最终荣耀专属样式
+        if (isFinal) {
+          univEl.classList.add('final');
+        } else {
+          univEl.classList.remove('final');
+        }
+
+        // 4. 更新进度显示
+        progressEl.textContent = `⚡ 闪现 ${index + 1} / ${flashArray.length} ⚡`;
+      }
+
+      /** 启动闪光序列 —— 更快速度：270ms/次，闪光动画0.25s */
+      function startFlash(list) {
+        // 清除之前的定时器
+        if (flashInterval) {
+          clearInterval(flashInterval);
+          flashInterval = null;
+        }
+
+        flashArray = list;
+        currentIndex = 0;
+
+        // 闪现第一个大学！
+        updateDisplay(currentIndex);
+
+        // 设置高速定时器，每270ms闪出下一个（相比原570ms提速超过50%）
+        flashInterval = setInterval(() => {
+          currentIndex++;
+
+          if (currentIndex < flashArray.length) {
+            updateDisplay(currentIndex);
+          } else {
+            // 闪现完毕：定格最终荣耀
+            clearInterval(flashInterval);
+            flashInterval = null;
+            progressEl.textContent = `🏆 荣耀定格 · ${flashArray[flashArray.length - 1]} 🏆`;
+          }
+        }, 270); // 更快节奏，干脆利落
+      }
+
+      /** 重置/重新闪现 —— 重新随机顺序 & 随机最终清北/北大 */
+      function resetAndFlash() {
+        if (flashInterval) {
+          clearInterval(flashInterval);
+          flashInterval = null;
+        }
+        const newList = buildFlashList();
+        startFlash(newList);
+      }
+
+      // ---------- 绑定事件 & 页面初始化 ----------
+      window.addEventListener('DOMContentLoaded', () => {
+        const initialList = buildFlashList();
+        startFlash(initialList);
+
+        const resetBtn = document.getElementById('resetBtn');
+        resetBtn.addEventListener('click', function() {
+          resetAndFlash();
+        });
+      });
+
+      window.addEventListener('beforeunload', function() {
+        if (flashInterval) {
+          clearInterval(flashInterval);
+          flashInterval = null;
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
