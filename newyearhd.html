@@ -49,38 +49,54 @@
             color: white;
         }
         
-        .blocks-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
+        .activity-info {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .blocks-area {
+            position: relative;
             width: 100%;
             max-width: 350px;
             margin: 0 auto 30px;
         }
         
+        .blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            aspect-ratio: 3/2;
+        }
+        
         .block {
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 15px;
             transition: all 0.3s ease;
-            border: 3px solid transparent;
-            cursor: pointer;
+            border: 2px solid transparent;
+            cursor: default;
         }
         
         .block.active {
             background: linear-gradient(135deg, #FFD700 0%, #FF9800 100%);
             transform: scale(1.05);
             border-color: #FFD700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
         }
         
         .block-value {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #FFD700;
             margin-bottom: 5px;
@@ -98,6 +114,29 @@
         .block.active .block-name {
             color: #333;
             font-weight: bold;
+        }
+        
+        .game-status {
+            font-size: 1rem;
+            margin: 10px 0;
+            padding: 8px 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .game-status.ready {
+            background: rgba(76, 175, 80, 0.2);
+            color: #C8E6C9;
+        }
+        
+        .game-status.waiting {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFF9C4;
+        }
+        
+        .game-status.disabled {
+            background: rgba(244, 67, 54, 0.2);
+            color: #FFCDD2;
         }
         
         .controls {
@@ -130,8 +169,8 @@
             opacity: 0.7;
         }
         
-        .balance {
-            font-size: 1.3rem;
+        .balance-info {
+            font-size: 1.2rem;
             margin: 15px 0;
             background: rgba(255, 255, 255, 0.2);
             padding: 10px 20px;
@@ -143,24 +182,6 @@
         .balance-amount {
             font-weight: bold;
             color: #FFD700;
-        }
-        
-        .status {
-            font-size: 1rem;
-            margin: 10px 0;
-            padding: 8px 15px;
-            border-radius: 15px;
-            display: inline-block;
-        }
-        
-        .status.available {
-            background: rgba(76, 175, 80, 0.2);
-            color: #C8E6C9;
-        }
-        
-        .status.unavailable {
-            background: rgba(244, 67, 54, 0.2);
-            color: #FFCDD2;
         }
         
         .result-modal {
@@ -217,7 +238,7 @@
             line-height: 1.5;
         }
         
-        .qr-code {
+        .qr-section {
             margin: 15px auto;
             padding: 10px;
             background: white;
@@ -226,19 +247,19 @@
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
         
-        .qr-code img {
+        .qr-image img {
             width: 150px;
             height: 150px;
             display: block;
         }
         
-        .qr-code-text {
+        .qr-text {
             margin-top: 8px;
             font-size: 0.9rem;
             color: #333;
         }
         
-        .close-modal {
+        .modal-close {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -261,20 +282,19 @@
             }
             
             .title {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
             
-            .blocks-container {
-                max-width: 300px;
+            .blocks-grid {
                 gap: 10px;
             }
             
             .block {
-                padding: 15px;
+                padding: 12px;
             }
             
             .block-value {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .block-name {
@@ -287,114 +307,70 @@
     <div class="container">
         <div class="header">
             <h1 class="title">🧧 新年红包抽奖 🧧</h1>
-            <p class="subtitle">每天一次机会，点击开始抽奖，赢取新年红包！</p>
+            <p class="subtitle">让光芒在方块间移动，赢取新年红包！</p>
+            <div class="activity-info" id="activityInfo">活动进行中！2026年2月16日-2月24日</div>
         </div>
         
-        <div class="blocks-container" id="blocksContainer">
-            <!-- 6个方块将通过JS动态生成 -->
+        <div class="blocks-area">
+            <div class="blocks-grid" id="blocksGrid">
+                <!-- 6个方块将通过JS动态生成 -->
+            </div>
         </div>
         
-        <div class="status" id="statusMessage"></div>
+        <div class="game-status" id="gameStatus">点击开始按钮抽奖</div>
         
         <div class="controls">
-            <button class="btn" id="startButton">开始抽奖</button>
+            <button class="btn" id="startBtn">开始抽奖</button>
         </div>
         
-        <div class="balance">
-            剩余奖金: <span id="balanceAmount" class="balance-amount">10.00</span> 元
+        <div class="balance-info">
+            剩余奖金: <span id="balanceDisplay" class="balance-amount">10.00</span> 元
         </div>
     </div>
     
     <div class="result-modal" id="resultModal">
         <div class="result-content">
-            <button class="close-modal" id="closeModal">&times;</button>
+            <button class="modal-close" id="modalClose">&times;</button>
             <h2 class="result-title" id="resultTitle">恭喜您！</h2>
             <div class="result-amount" id="resultAmount">1.00 元</div>
             <p class="result-message" id="resultMessage">新年快乐！祝您财源广进！</p>
             
-            <div class="qr-code" id="qrCodeContainer">
-                <div id="qrCodeImage"></div>
-                <div class="qr-code-text" id="qrCodeText">扫码领取红包</div>
+            <div class="qr-section" id="qrSection">
+                <div class="qr-image" id="qrImage"></div>
+                <div class="qr-text" id="qrText">扫码领取红包</div>
             </div>
             
-            <button class="btn" id="playAgainBtn">确定</button>
+            <button class="btn" id="confirmBtn">确定</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 奖项配置 - 新年祝福权重最高，现金奖励权重低
+            // 奖项配置
             const prizes = [
-                { 
-                    id: 1,
-                    name: "1元红包", 
-                    value: 1.00, 
-                    weight: 1,  // 权重很低
-                    color: "#FFEB3B", 
-                    message: "恭喜获得1元红包！新年开门红！",
-                    hasPrize: true
-                },
-                { 
-                    id: 2,
-                    name: "0.5元红包", 
-                    value: 0.50, 
-                    weight: 2,
-                    color: "#4CAF50", 
-                    message: "恭喜获得0.5元红包！好运连连！",
-                    hasPrize: true
-                },
-                { 
-                    id: 3,
-                    name: "0.2元红包", 
-                    value: 0.20, 
-                    weight: 3,
-                    color: "#2196F3", 
-                    message: "恭喜获得0.2元红包！福气满满！",
-                    hasPrize: true
-                },
-                { 
-                    id: 4,
-                    name: "0.1元红包", 
-                    value: 0.10, 
-                    weight: 4,
-                    color: "#9C27B0", 
-                    message: "恭喜获得0.1元红包！吉祥如意！",
-                    hasPrize: true
-                },
-                { 
-                    id: 5,
-                    name: "0.01元红包", 
-                    value: 0.01, 
-                    weight: 5,
-                    color: "#FF9800", 
-                    message: "恭喜获得0.01元红包！积少成多！",
-                    hasPrize: true
-                },
-                { 
-                    id: 6,
-                    name: "新年祝福", 
-                    value: 0.00, 
-                    weight: 85,  // 权重最高
-                    color: "#F44336", 
-                    message: "恭喜获得新年祝福！万事如意！",
-                    hasPrize: false
-                }
+                { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true },
+                { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true },
+                { id: 3, name: "0.2元红包", value: 0.20, weight: 3, color: "#2196F3", message: "恭喜获得0.2元红包！福气满满！", hasPrize: true },
+                { id: 4, name: "0.1元红包", value: 0.10, weight: 4, color: "#9C27B0", message: "恭喜获得0.1元红包！吉祥如意！", hasPrize: true },
+                { id: 5, name: "0.01元红包", value: 0.01, weight: 5, color: "#FF9800", message: "恭喜获得0.01元红包！积少成多！", hasPrize: true },
+                { id: 6, name: "新年祝福", value: 0.00, weight: 85, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false }
             ];
             
             // DOM元素
-            const blocksContainer = document.getElementById('blocksContainer');
-            const startButton = document.getElementById('startButton');
-            const statusMessage = document.getElementById('statusMessage');
+            const blocksGrid = document.getElementById('blocksGrid');
+            const startBtn = document.getElementById('startBtn');
+            const gameStatus = document.getElementById('gameStatus');
             const resultModal = document.getElementById('resultModal');
             const resultTitle = document.getElementById('resultTitle');
             const resultAmount = document.getElementById('resultAmount');
             const resultMessage = document.getElementById('resultMessage');
-            const qrCodeContainer = document.getElementById('qrCodeContainer');
-            const qrCodeImage = document.getElementById('qrCodeImage');
-            const qrCodeText = document.getElementById('qrCodeText');
-            const playAgainBtn = document.getElementById('playAgainBtn');
-            const closeModal = document.getElementById('closeModal');
-            const balanceAmount = document.getElementById('balanceAmount');
+            const qrSection = document.getElementById('qrSection');
+            const qrImage = document.getElementById('qrImage');
+            const qrText = document.getElementById('qrText');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const modalClose = document.getElementById('modalClose');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            const activityInfo = document.getElementById('activityInfo');
             
             // 游戏状态
             let totalBalance = 10.00;
@@ -402,55 +378,48 @@
             let currentBlockIndex = 0;
             let blocks = [];
             let todayDrawn = false;
+            let isActivityActive = false;
             
-            // 检查今天是否已经抽过奖
-            function checkDailyDraw() {
-                try {
-                    const today = new Date().toDateString();
-                    const lastDrawDate = localStorage.getItem('newYearLotteryLastDrawDate');
+            // 检查活动时间
+            function checkActivityTime() {
+                const now = new Date();
+                
+                // 设置活动时间范围：2026年2月16日00:00:00 - 2月24日23:59:59
+                const activityStart = new Date(2026, 1, 16, 0, 0, 0);  // 月份是0-based，1表示2月
+                const activityEnd = new Date(2026, 1, 24, 23, 59, 59);
+                
+                console.log("当前时间:", now);
+                console.log("活动开始时间:", activityStart);
+                console.log("活动结束时间:", activityEnd);
+                
+                if (now >= activityStart && now <= activityEnd) {
+                    isActivityActive = true;
+                    activityInfo.textContent = "活动进行中！2026年2月16日-2月24日";
+                    activityInfo.style.background = "rgba(76, 175, 80, 0.2)";
+                    activityInfo.style.color = "#C8E6C9";
+                    return true;
+                } else {
+                    isActivityActive = false;
                     
-                    if (lastDrawDate === today) {
-                        // 今天已经抽过奖
-                        todayDrawn = true;
-                        startButton.disabled = true;
-                        startButton.textContent = "今日已抽奖";
-                        statusMessage.textContent = "今日已抽奖，请明天再来！";
-                        statusMessage.className = "status unavailable";
+                    if (now < activityStart) {
+                        const daysLeft = Math.ceil((activityStart - now) / (1000 * 60 * 60 * 24));
+                        activityInfo.textContent = `活动将于2026年2月16日开始，还有${daysLeft}天`;
                     } else {
-                        // 今天还没抽过奖
-                        todayDrawn = false;
-                        startButton.disabled = false;
-                        startButton.textContent = "开始抽奖";
-                        statusMessage.textContent = "今日可抽奖，点击开始按钮！";
-                        statusMessage.className = "status available";
+                        activityInfo.textContent = "活动已结束，感谢参与！";
                     }
-                } catch (e) {
-                    console.error("检查抽奖状态失败:", e);
-                    todayDrawn = false;
-                    startButton.disabled = false;
-                    statusMessage.textContent = "点击开始按钮抽奖";
-                    statusMessage.className = "status available";
-                }
-            }
-            
-            // 记录今日抽奖
-            function recordDailyDraw() {
-                try {
-                    const today = new Date().toDateString();
-                    localStorage.setItem('newYearLotteryLastDrawDate', today);
-                    todayDrawn = true;
-                    startButton.disabled = true;
-                    startButton.textContent = "今日已抽奖";
-                    statusMessage.textContent = "今日已抽奖，请明天再来！";
-                    statusMessage.className = "status unavailable";
-                } catch (e) {
-                    console.error("记录抽奖状态失败:", e);
+                    
+                    activityInfo.style.background = "rgba(244, 67, 54, 0.2)";
+                    activityInfo.style.color = "#FFCDD2";
+                    startBtn.disabled = true;
+                    gameStatus.textContent = "活动时间外，无法抽奖";
+                    gameStatus.className = "game-status disabled";
+                    return false;
                 }
             }
             
             // 初始化方块
             function initBlocks() {
-                blocksContainer.innerHTML = '';
+                blocksGrid.innerHTML = '';
                 blocks = [];
                 
                 prizes.forEach((prize, index) => {
@@ -458,25 +427,22 @@
                     block.className = 'block';
                     block.dataset.index = index;
                     block.dataset.id = prize.id;
-                    
-                    // 设置方块背景色
                     block.style.backgroundColor = prize.color;
                     
-                    // 添加方块内容
                     block.innerHTML = `
                         <div class="block-value">${prize.value > 0 ? prize.value.toFixed(2) + '元' : '祝福'}</div>
                         <div class="block-name">${prize.name}</div>
                     `;
                     
-                    blocksContainer.appendChild(block);
+                    blocksGrid.appendChild(block);
                     blocks.push(block);
                 });
                 
-                // 初始化第一个方块为选中状态
+                // 设置第一个方块为选中状态
                 updateActiveBlock(0);
             }
             
-            // 更新当前选中的方块（通过背景颜色）
+            // 更新当前选中的方块
             function updateActiveBlock(index) {
                 // 移除所有方块的active类
                 blocks.forEach(block => {
@@ -490,77 +456,81 @@
                 }
             }
             
-            // 开始抽奖动画
-            function startSpinAnimation() {
-                if (isSpinning || todayDrawn) {
+            // 开始抽奖
+            function startLottery() {
+                // 先检查活动时间
+                if (!isActivityActive) {
+                    alert("当前不是活动时间，无法抽奖！");
+                    return;
+                }
+                
+                if (isSpinning || todayDrawn || !isActivityActive) {
                     return;
                 }
                 
                 isSpinning = true;
-                startButton.disabled = true;
+                startBtn.disabled = true;
+                gameStatus.textContent = "抽奖进行中...";
+                gameStatus.className = "game-status waiting";
                 resultModal.style.display = 'none';
                 
-                // 随机选择奖项（根据权重）
+                // 随机选择奖项
                 const selectedPrize = selectPrizeByWeight();
                 const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
                 
                 // 动画参数
                 const baseMoves = 20;
-                const weightFactor = 85 - selectedPrize.weight;
-                const totalMoves = baseMoves + weightFactor;
+                const weightBonus = 85 - selectedPrize.weight;
+                const totalMoves = baseMoves + weightBonus;
                 
                 let currentMove = 0;
                 const initialSpeed = 100;
                 let speedIncrease = 0;
                 
-                // 开始移动动画
-                function moveToNextBlock() {
+                // 移动动画
+                function moveAnimation() {
                     let nextIndex = (currentBlockIndex + 1) % blocks.length;
                     updateActiveBlock(nextIndex);
                     
                     currentMove++;
                     speedIncrease++;
                     
-                    // 逐渐减速
                     const currentSpeed = Math.max(50, initialSpeed + speedIncrease * 10);
                     
                     if (currentMove < totalMoves) {
-                        // 继续移动
-                        setTimeout(moveToNextBlock, currentSpeed);
+                        setTimeout(moveAnimation, currentSpeed);
                     } else {
                         // 最后快速经过所有方块几次
                         let finalPasses = 3;
                         let passCount = 0;
                         
-                        function finalPass() {
+                        function finalAnimation() {
                             let nextIndex = (currentBlockIndex + 1) % blocks.length;
                             updateActiveBlock(nextIndex);
                             
                             passCount++;
                             if (passCount < finalPasses * blocks.length) {
-                                setTimeout(finalPass, 50);
+                                setTimeout(finalAnimation, 50);
                             } else {
-                                // 最终停在目标方块
+                                // 停在目标方块
                                 updateActiveBlock(targetIndex);
                                 
-                                // 短暂延迟后完成抽奖
+                                // 完成抽奖
                                 setTimeout(() => {
-                                    finishSpin(targetIndex);
+                                    finishLottery(targetIndex);
                                 }, 500);
                             }
                         }
                         
-                        setTimeout(finalPass, 50);
+                        setTimeout(finalAnimation, 50);
                     }
                 }
                 
-                // 开始移动
-                moveToNextBlock();
+                moveAnimation();
             }
             
             // 根据权重选择奖项
             function selectPrizeByWeight() {
-                // 创建权重数组
                 const weightArray = [];
                 prizes.forEach(prize => {
                     for (let i = 0; i < prize.weight; i++) {
@@ -568,13 +538,12 @@
                     }
                 });
                 
-                // 随机选择
                 const randomIndex = Math.floor(Math.random() * weightArray.length);
                 return weightArray[randomIndex];
             }
             
             // 完成抽奖
-            function finishSpin(prizeIndex) {
+            function finishLottery(prizeIndex) {
                 const prize = prizes[prizeIndex];
                 
                 // 记录今日抽奖
@@ -585,70 +554,79 @@
                     totalBalance -= prize.value;
                     if (totalBalance < 0) totalBalance = 0;
                 }
-                balanceAmount.textContent = totalBalance.toFixed(2);
+                balanceDisplay.textContent = totalBalance.toFixed(2);
                 
-                // 显示结果弹窗
-                showResultModal(prize);
+                // 显示结果
+                showResult(prize);
                 
                 isSpinning = false;
             }
             
-            // 显示结果弹窗
-            function showResultModal(prize) {
+            // 显示结果
+            function showResult(prize) {
                 resultTitle.textContent = prize.hasPrize ? "恭喜您中奖了！" : "新年祝福！";
                 resultAmount.textContent = prize.hasPrize ? prize.value.toFixed(2) + " 元" : "福气满满";
                 resultMessage.textContent = prize.message;
                 
                 // 设置二维码
                 if (prize.hasPrize) {
-                    qrCodeContainer.style.display = 'inline-block';
-                    qrCodeImage.innerHTML = '';
-                    qrCodeText.textContent = "扫码领取红包";
+                    qrSection.style.display = 'inline-block';
+                    qrImage.innerHTML = '<img src="https://longsstudio.github.io/-123panal.png" alt="收款二维码" onerror="this.src=\'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年快乐\'">';
+                    qrText.textContent = "扫码领取红包";
                 } else {
-                    qrCodeContainer.style.display = 'none';
+                    qrSection.style.display = 'none';
                 }
                 
                 resultModal.style.display = 'flex';
             }
             
-            // 页面离开提示
-            function setupPageLeaveWarning() {
-                window.addEventListener('beforeunload', function(e) {
-                    e.preventDefault();
-                    e.returnValue = '明天一定要再回来啊！';
-                    return '明天一定要再回来啊！';
-                });
+            // 记录今日抽奖
+            function recordDailyDraw() {
+                todayDrawn = true;
+                startBtn.disabled = true;
+                startBtn.textContent = "今日已抽奖";
+                gameStatus.textContent = "今日已抽奖，请明天再来！";
+                gameStatus.className = "game-status disabled";
+            }
+            
+            // 检查今天是否已经抽过奖
+            function checkDailyDraw() {
+                // 这里可以添加本地存储检查，但为了简化，我们假设每天都可以抽一次
+                todayDrawn = false;
+                
+                if (isActivityActive) {
+                    startBtn.disabled = false;
+                    startBtn.textContent = "开始抽奖";
+                    gameStatus.textContent = "点击开始按钮抽奖";
+                    gameStatus.className = "game-status ready";
+                }
             }
             
             // 事件监听
-            startButton.addEventListener('click', startSpinAnimation);
+            startBtn.addEventListener('click', startLottery);
             
-            playAgainBtn.addEventListener('click', function() {
+            confirmBtn.addEventListener('click', function() {
                 resultModal.style.display = 'none';
             });
             
-            closeModal.addEventListener('click', function() {
+            modalClose.addEventListener('click', function() {
                 resultModal.style.display = 'none';
             });
             
-            // 点击弹窗外部关闭弹窗
             resultModal.addEventListener('click', function(e) {
                 if (e.target === resultModal) {
                     resultModal.style.display = 'none';
                 }
             });
             
-            // 初始化二维码图片
-            qrCodeImage.innerHTML = '';
-            
             // 初始化游戏
             function initGame() {
+                checkActivityTime();
                 initBlocks();
                 checkDailyDraw();
-                setupPageLeaveWarning();
             }
             
-            // 页面加载完成后初始化游戏
+            // 页面加载完成后初始化
             initGame();
         });
     </script>
