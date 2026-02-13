@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>新年红包抽奖</title>
+    <title>新年红包抽奖 · 十亿 · 任务次数</title>
     <style>
         * {
             margin: 0;
@@ -32,11 +32,10 @@
         }
         
         .header {
-            position: relative;  /* 为发现按钮提供绝对定位参考 */
+            position: relative;
             margin-bottom: 20px;
         }
         
-        /* 右上角发现按钮 */
         .discover-btn {
             position: absolute;
             top: 0;
@@ -67,7 +66,7 @@
             color: #FFD700;
             margin-bottom: 10px;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            padding-right: 70px; /* 给发现按钮留空间，避免重叠 */
+            padding-right: 70px;
         }
         
         .subtitle {
@@ -198,6 +197,60 @@
             opacity: 0.7;
         }
         
+        /* 新增任务区域样式 */
+        .task-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0 10px;
+            flex-wrap: wrap;
+        }
+        
+        .times-badge {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            padding: 8px 20px;
+            color: white;
+            font-size: 1.1rem;
+            border: 1px solid #FFD700;
+            backdrop-filter: blur(2px);
+        }
+        
+        .times-number {
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 1.4rem;
+            margin-left: 5px;
+        }
+        
+        .task-btn {
+            background: linear-gradient(to bottom, #FF9800, #F57C00);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #FFB74D;
+            transition: 0.2s;
+        }
+        .task-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+        .task-btn:disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+            filter: grayscale(0.6);
+        }
+        
         .balance-info {
             font-size: 1.2rem;
             margin: 15px 0;
@@ -213,7 +266,6 @@
             color: #FFD700;
         }
         
-        /* 抽奖结果弹窗 (原有) */
         .result-modal {
             display: none;
             position: fixed;
@@ -306,7 +358,6 @@
             align-items: center;
         }
         
-        /* ---------- 发现弹窗 独立样式 (全新) ---------- */
         .discover-modal {
             display: none;
             position: fixed;
@@ -493,39 +544,57 @@
                 width: 140px;
                 height: 140px;
             }
+            .task-section {
+                gap: 10px;
+            }
+            .times-badge {
+                font-size: 1rem;
+                padding: 6px 15px;
+            }
+            .task-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <!-- 右上角发现按钮（静态嵌入） -->
             <div class="discover-btn" id="discoverTrigger">
-                <span style="font-size:1.1rem;"></span> 分享
+                <span style="font-size:1.1rem;">🔍</span> 发现
             </div>
-            <h1 class="title">🧧智慧白板过大年 </h1>
-            <p class="subtitle">智慧陪你过大年，赢取新年红包！</p>
-            <div class="activity-info" id="activityInfo">活动时间：2026年2月16日-2月24日</div>
+            <h1 class="title">🧧智慧陪你过大年</h1>
+            <p class="subtitle">做任务得次数，十亿奖金等你拿！</p>
+            <div class="activity-info" id="activityInfo">活动时间2026年2月16日-2月24日</div>
         </div>
         
         <div class="blocks-area">
-            <div class="blocks-grid" id="blocksGrid">
-                <!-- 6个方块将通过JS动态生成 -->
-            </div>
+            <div class="blocks-grid" id="blocksGrid"></div>
         </div>
         
-        <div class="game-status" id="gameStatus">点击开始抽奖</div>
+        <!-- 新增：抽奖次数显示 + 做任务按钮 -->
+        <div class="task-section">
+            <div class="times-badge">
+                🎟️ 剩余次数 <span id="drawTimesDisplay" class="times-number">0</span>
+            </div>
+            <button class="task-btn" id="taskBtn">
+                ✅ 每日签到 +1次
+            </button>
+        </div>
+        
+        <div class="game-status" id="gameStatus">点击开始按钮抽奖</div>
         
         <div class="controls">
             <button class="btn" id="startBtn">开始抽奖</button>
         </div>
         
         <div class="balance-info">
-            剩余奖金: <span id="balanceDisplay" class="balance-amount">60</span> 亿元
+            剩余奖金: <span id="balanceDisplay" class="balance-amount">1,000,000,000.00</span> 元
         </div>
     </div>
     
-    <!-- 抽奖结果弹窗 (保留原有) -->
+    <!-- 抽奖结果弹窗 -->
     <div class="result-modal" id="resultModal">
         <div class="result-content">
             <button class="modal-close" id="modalClose">&times;</button>
@@ -542,24 +611,21 @@
         </div>
     </div>
 
-    <!-- ========= 新增：发现弹窗（二维码+网址，支持复制） ========= -->
+    <!-- 发现弹窗 -->
     <div class="discover-modal" id="discoverModal">
         <div class="discover-content">
             <button class="modal-close" id="discoverModalClose">&times;</button>
             <div class="discover-title">
                 <span>✨ 发现精彩 ✨</span>
             </div>
-            <!-- 二维码区域 -->
             <div class="discover-qr-wrap">
                 <div class="discover-qr-img">
-                    <!-- 二维码图片：链接为 longsstudio.github.io/newyearhq.png 补全https -->
                     <img src="https://longsstudio.github.io/newyearhq.png" alt="发现二维码" id="discoverQrImage" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年发现页';">
                 </div>
                 <button class="copy-qr-btn" id="copyQrBtn">
                     📋 复制二维码地址
                 </button>
             </div>
-            <!-- 网页地址栏 -->
             <div style="font-size:0.9rem; color:#555; margin-bottom:5px; text-align:left; padding-left:5px;">🌐 当前页面地址</div>
             <div class="url-container">
                 <input type="text" class="url-text" id="discoverPageUrl" readonly value="">
@@ -575,7 +641,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ================== 原有红包抽奖逻辑 (保留完整) ==================
+            // ================== 红包抽奖逻辑（整合任务次数 & 持久化）==================
             const prizes = [
                 { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true },
                 { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true },
@@ -585,6 +651,7 @@
                 { id: 6, name: "新年祝福", value: 0.00, weight: 85, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false }
             ];
             
+            // DOM 元素
             const blocksGrid = document.getElementById('blocksGrid');
             const startBtn = document.getElementById('startBtn');
             const gameStatus = document.getElementById('gameStatus');
@@ -600,12 +667,78 @@
             const balanceDisplay = document.getElementById('balanceDisplay');
             const activityInfo = document.getElementById('activityInfo');
             
-            let totalBalance = 10.00;
+            // 新增：次数显示 & 任务按钮
+            const drawTimesSpan = document.getElementById('drawTimesDisplay');
+            const taskBtn = document.getElementById('taskBtn');
+            
+            // ---------- 总金额设置（10亿元）----------
+            const INITIAL_BALANCE = 1000000000.00; // 可随意修改
+            // -----------------------------------------
+            
+            // 游戏状态变量
+            let totalBalance = INITIAL_BALANCE;
             let isSpinning = false;
             let currentBlockIndex = 0;
             let blocks = [];
-            let todayDrawn = false;
             let isActivityActive = false;
+            let currentPrize = null;                // 存储当前中奖奖项，用于微信跳转
+            
+            // 🔥 新增：抽奖次数（从localStorage读取，默认赠送3次）
+            let drawTimes = 0;
+            const STORAGE_KEY = 'newYearDrawTimes';
+            
+            // 初始化或加载次数
+            function loadDrawTimes() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored !== null) {
+                    drawTimes = parseInt(stored, 10) || 0;
+                } else {
+                    // 默认给3次体验机会
+                    drawTimes = 3;
+                    localStorage.setItem(STORAGE_KEY, drawTimes);
+                }
+                updateTimesDisplay();
+            }
+            
+            // 更新显示并保存到localStorage
+            function updateTimesDisplay() {
+                drawTimesSpan.textContent = drawTimes;
+                localStorage.setItem(STORAGE_KEY, drawTimes);
+                // 根据次数和活动状态控制开始按钮
+                updateStartButtonState();
+            }
+            
+            // 根据活动状态、抽奖次数、是否旋转 控制开始按钮
+            function updateStartButtonState() {
+                if (!isActivityActive) {
+                    startBtn.disabled = true;
+                    taskBtn.disabled = true;    // 活动外任务按钮也禁用
+                } else if (isSpinning) {
+                    startBtn.disabled = true;
+                    taskBtn.disabled = true;     // 旋转时不可做任务
+                } else {
+                    startBtn.disabled = (drawTimes <= 0);
+                    taskBtn.disabled = false;
+                }
+            }
+            
+            // 任务按钮点击：增加一次抽奖次数（模拟签到做任务）
+            function handleTask() {
+                if (!isActivityActive) {
+                    alert('活动未开始或已结束，无法获取次数');
+                    return;
+                }
+                if (isSpinning) return; // 动画期间不可点击
+                drawTimes += 1;
+                updateTimesDisplay();
+                // 可选提示
+                // alert('签到成功！获得1次抽奖机会');
+            }
+            
+            // 格式化金额显示（带千位分隔符）
+            function formatBalance(amount) {
+                return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
             
             // 检查活动时间
             function checkActivityTime() {
@@ -618,7 +751,6 @@
                     activityInfo.textContent = "活动进行中！2026年2月16日-2月24日";
                     activityInfo.style.background = "rgba(76, 175, 80, 0.2)";
                     activityInfo.style.color = "#C8E6C9";
-                    return true;
                 } else {
                     isActivityActive = false;
                     if (now < activityStart) {
@@ -629,11 +761,8 @@
                     }
                     activityInfo.style.background = "rgba(244, 67, 54, 0.2)";
                     activityInfo.style.color = "#FFCDD2";
-                    startBtn.disabled = true;
-                    gameStatus.textContent = "活动时间外，无法抽奖";
-                    gameStatus.className = "game-status disabled";
-                    return false;
                 }
+                updateStartButtonState();
             }
             
             // 初始化方块
@@ -664,13 +793,22 @@
                 }
             }
             
-            // 开始抽奖
+            // 开始抽奖 (修改：消耗次数)
             function startLottery() {
                 if (!isActivityActive) { alert("当前不是活动时间，无法抽奖！"); return; }
-                if (isSpinning || todayDrawn || !isActivityActive) return;
+                if (isSpinning) return;
+                if (drawTimes <= 0) {
+                    alert('抽奖次数不足，请先做任务获取次数');
+                    return;
+                }
+                
+                // 消耗一次次数
+                drawTimes -= 1;
+                updateTimesDisplay();          // 更新显示并保存
                 
                 isSpinning = true;
                 startBtn.disabled = true;
+                taskBtn.disabled = true;        // 抽奖过程中任务按钮禁用
                 gameStatus.textContent = "抽奖进行中...";
                 gameStatus.className = "game-status waiting";
                 resultModal.style.display = 'none';
@@ -725,14 +863,22 @@
             
             function finishLottery(prizeIndex) {
                 const prize = prizes[prizeIndex];
-                recordDailyDraw();
+                currentPrize = prize;
+                
+                // 扣除奖金（只有现金红包才扣）
                 if (prize.hasPrize) {
                     totalBalance -= prize.value;
                     if (totalBalance < 0) totalBalance = 0;
                 }
-                balanceDisplay.textContent = totalBalance.toFixed(2);
+                balanceDisplay.textContent = formatBalance(totalBalance);
+                
+                // 显示结果
                 showResult(prize);
+                
                 isSpinning = false;
+                // 抽奖结束，更新按钮状态（可能次数为0，禁用开始按钮）
+                updateStartButtonState();
+                // 如果还有次数，任务按钮恢复可用（updateStartButtonState已处理）
             }
             
             function showResult(prize) {
@@ -749,39 +895,35 @@
                 resultModal.style.display = 'flex';
             }
             
-            function recordDailyDraw() {
-                todayDrawn = true;
-                startBtn.disabled = true;
-                startBtn.textContent = "今日已抽奖";
-                gameStatus.textContent = "今日已抽奖，请明天再来！";
-                gameStatus.className = "game-status disabled";
-            }
-            
-            function checkDailyDraw() {
-                todayDrawn = false;
-                if (isActivityActive) {
-                    startBtn.disabled = false;
-                    startBtn.textContent = "开始抽奖";
-                    gameStatus.textContent = "点击开始按钮抽奖";
-                    gameStatus.className = "game-status ready";
+            // 确认按钮：跳转微信（仅当有现金红包时）
+            function handleConfirm() {
+                resultModal.style.display = 'none';
+                if (currentPrize && currentPrize.hasPrize) {
+                    window.location.href = 'weixin://';
                 }
+                // 不清空currentPrize，但只跳转一次，再次点击确认不会跳转，因为弹窗已关
             }
-            
-            // 原有事件监听
-            startBtn.addEventListener('click', startLottery);
-            confirmBtn.addEventListener('click', function() { resultModal.style.display = 'none'; });
-            modalClose.addEventListener('click', function() { resultModal.style.display = 'none'; });
-            resultModal.addEventListener('click', function(e) { if (e.target === resultModal) resultModal.style.display = 'none'; });
             
             // 初始化游戏
             function initGame() {
                 checkActivityTime();
                 initBlocks();
-                checkDailyDraw();
+                loadDrawTimes();                 // 加载抽奖次数
+                balanceDisplay.textContent = formatBalance(totalBalance);
+                // 任务按钮监听
+                taskBtn.addEventListener('click', handleTask);
+                // 抽奖按钮
+                startBtn.addEventListener('click', startLottery);
+                // 确认按钮
+                confirmBtn.addEventListener('click', handleConfirm);
+                // 关闭按钮
+                modalClose.addEventListener('click', function() { resultModal.style.display = 'none'; });
+                resultModal.addEventListener('click', function(e) { if (e.target === resultModal) resultModal.style.display = 'none'; });
             }
+            
             initGame();
             
-            // ================ 新增：发现功能（右上角+弹窗+复制） ================
+            // ================== 发现功能（保持不变）==================
             const discoverTrigger = document.getElementById('discoverTrigger');
             const discoverModal = document.getElementById('discoverModal');
             const discoverModalClose = document.getElementById('discoverModalClose');
@@ -790,65 +932,29 @@
             const copyUrlBtn = document.getElementById('copyUrlBtn');
             const discoverPageUrl = document.getElementById('discoverPageUrl');
             
-            // 二维码图片地址（固定）
             const QR_IMAGE_URL = 'https://longsstudio.github.io/newyearhq.png';
             
-            // 打开发现弹窗：更新当前网页地址
             function openDiscoverModal() {
-                // 更新网页地址为当前页面URL
                 discoverPageUrl.value = window.location.href;
                 discoverModal.style.display = 'flex';
             }
             
-            // 关闭发现弹窗
             function closeDiscoverModal() {
                 discoverModal.style.display = 'none';
             }
             
-            // 复制文本通用方法
             function copyTextToClipboard(text, successMsg = '复制成功！') {
-                if (!text) {
-                    alert('无内容可复制');
-                    return;
-                }
-                navigator.clipboard.writeText(text).then(() => {
-                    alert(successMsg);
-                }).catch(err => {
-                    alert('复制失败，请手动复制');
-                    console.error(err);
-                });
+                if (!text) return alert('无内容可复制');
+                navigator.clipboard.writeText(text).then(() => alert(successMsg))
+                    .catch(() => alert('复制失败，请手动复制'));
             }
             
-            // 事件绑定：发现按钮
-            discoverTrigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                openDiscoverModal();
-            });
-            
-            // 关闭方式：X按钮
+            discoverTrigger.addEventListener('click', (e) => { e.stopPropagation(); openDiscoverModal(); });
             discoverModalClose.addEventListener('click', closeDiscoverModal);
-            // 关闭按钮
             discoverConfirmBtn.addEventListener('click', closeDiscoverModal);
-            // 点击背景关闭
-            discoverModal.addEventListener('click', function(e) {
-                if (e.target === discoverModal) {
-                    closeDiscoverModal();
-                }
-            });
-            
-            // 复制二维码地址（固定链接）
-            copyQrBtn.addEventListener('click', function() {
-                copyTextToClipboard(QR_IMAGE_URL, '二维码地址已复制！');
-            });
-            
-            // 复制网页地址（当前input里的值）
-            copyUrlBtn.addEventListener('click', function() {
-                const url = discoverPageUrl.value;
-                copyTextToClipboard(url, '网页地址已复制！');
-            });
-            
-            // 可选：二维码图片加载失败时的备选(已在img中设置onerror)
-            // 确保发现弹窗不影响原有抽奖状态
+            discoverModal.addEventListener('click', (e) => { if (e.target === discoverModal) closeDiscoverModal(); });
+            copyQrBtn.addEventListener('click', () => copyTextToClipboard(QR_IMAGE_URL, '二维码地址已复制！'));
+            copyUrlBtn.addEventListener('click', () => copyTextToClipboard(discoverPageUrl.value, '网页地址已复制！'));
         });
     </script>
 </body>
