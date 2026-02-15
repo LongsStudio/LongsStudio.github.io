@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>新年红包抽奖 · 十亿 · 任务次数</title>
+    <title>智慧白板新年抽奖</title>
+    <!-- 烟花彩带库 (canvas-confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
         * {
             margin: 0;
@@ -150,6 +152,7 @@
             padding: 8px 15px;
             border-radius: 15px;
             display: inline-block;
+            transition: background 0.3s;
         }
         
         .game-status.ready {
@@ -160,6 +163,13 @@
         .game-status.waiting {
             background: rgba(255, 193, 7, 0.2);
             color: #FFF9C4;
+        }
+        
+        .game-status.extra {
+            background: rgba(255, 87, 34, 0.3);
+            color: #FFCCBC;
+            font-weight: bold;
+            border: 1px solid #FF9800;
         }
         
         .game-status.disabled {
@@ -197,7 +207,6 @@
             opacity: 0.7;
         }
         
-        /* 新增任务区域样式 */
         .task-section {
             display: flex;
             align-items: center;
@@ -573,7 +582,7 @@
             <div class="blocks-grid" id="blocksGrid"></div>
         </div>
         
-        <!-- 新增：抽奖次数显示 + 做任务按钮 -->
+        <!-- 抽奖次数显示 + 做任务按钮 -->
         <div class="task-section">
             <div class="times-badge">
                 🎟️ 剩余次数 <span id="drawTimesDisplay" class="times-number">0</span>
@@ -642,13 +651,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ================== 红包抽奖逻辑（整合任务次数 & 持久化）==================
+            // 奖项配置：将0.01元红包替换为“15元智慧白板代金券”，权重提高至25 (原5)，同时祝福权重降低至75，让代金券概率≈20%
             const prizes = [
-                { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true },
-                { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true },
-                { id: 3, name: "0.2元红包", value: 0.20, weight: 3, color: "#2196F3", message: "恭喜获得0.2元红包！福气满满！", hasPrize: true },
-                { id: 4, name: "0.1元红包", value: 0.10, weight: 4, color: "#9C27B0", message: "恭喜获得0.1元红包！吉祥如意！", hasPrize: true },
-                { id: 5, name: "0.01元红包", value: 0.01, weight: 5, color: "#FF9800", message: "恭喜获得0.01元红包！积少成多！", hasPrize: true },
-                { id: 6, name: "新年祝福", value: 0.00, weight: 85, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false }
+                { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true, isCash: true },
+                { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true, isCash: true },
+                { id: 3, name: "0.2元红包", value: 0.20, weight: 3, color: "#2196F3", message: "恭喜获得0.2元红包！福气满满！", hasPrize: true, isCash: true },
+                { id: 4, name: "0.1元红包", value: 0.10, weight: 4, color: "#9C27B0", message: "恭喜获得0.1元红包！吉祥如意！", hasPrize: true, isCash: true },
+                { id: 5, name: "15元智慧白板代金券", value: 15, weight: 25, color: "#FF5722", message: "恭喜获得15元智慧白板代金券！快去领取吧！", hasPrize: true, isCash: false },  // 代金券不扣除余额，但显示二维码
+                { id: 6, name: "新年祝福", value: 0.00, weight: 65, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false, isCash: false }
             ];
             
             // DOM 元素
@@ -667,13 +677,12 @@
             const balanceDisplay = document.getElementById('balanceDisplay');
             const activityInfo = document.getElementById('activityInfo');
             
-            // 新增：次数显示 & 任务按钮
+            // 次数显示 & 任务按钮
             const drawTimesSpan = document.getElementById('drawTimesDisplay');
             const taskBtn = document.getElementById('taskBtn');
             
             // ---------- 总金额设置（10亿元）----------
-            const INITIAL_BALANCE = 1000000000.00; // 可随意修改
-            // -----------------------------------------
+            const INITIAL_BALANCE = 1000000000.00;
             
             // 游戏状态变量
             let totalBalance = INITIAL_BALANCE;
@@ -681,9 +690,9 @@
             let currentBlockIndex = 0;
             let blocks = [];
             let isActivityActive = false;
-            let currentPrize = null;                // 存储当前中奖奖项，用于微信跳转
+            let currentPrize = null;                // 存储当前中奖奖项
             
-            // 🔥 新增：抽奖次数（从localStorage读取，默认赠送3次）
+            // 抽奖次数（localStorage持久化）
             let drawTimes = 0;
             const STORAGE_KEY = 'newYearDrawTimes';
             
@@ -693,8 +702,7 @@
                 if (stored !== null) {
                     drawTimes = parseInt(stored, 10) || 0;
                 } else {
-                    // 默认给3次体验机会
-                    drawTimes = 3;
+                    drawTimes = 3;  // 默认3次体验
                     localStorage.setItem(STORAGE_KEY, drawTimes);
                 }
                 updateTimesDisplay();
@@ -704,35 +712,35 @@
             function updateTimesDisplay() {
                 drawTimesSpan.textContent = drawTimes;
                 localStorage.setItem(STORAGE_KEY, drawTimes);
-                // 根据次数和活动状态控制开始按钮
                 updateStartButtonState();
             }
             
-            // 根据活动状态、抽奖次数、是否旋转 控制开始按钮
+            // 根据活动状态、抽奖次数、是否旋转 控制按钮
             function updateStartButtonState() {
                 if (!isActivityActive) {
                     startBtn.disabled = true;
-                    taskBtn.disabled = true;    // 活动外任务按钮也禁用
+                    taskBtn.disabled = true;
                 } else if (isSpinning) {
                     startBtn.disabled = true;
-                    taskBtn.disabled = true;     // 旋转时不可做任务
+                    taskBtn.disabled = true;
                 } else {
                     startBtn.disabled = (drawTimes <= 0);
                     taskBtn.disabled = false;
                 }
             }
             
-            // 任务按钮点击：增加一次抽奖次数（模拟签到做任务）
+            // 任务按钮点击：每日签到 +1次
             function handleTask() {
                 if (!isActivityActive) {
                     alert('活动未开始或已结束，无法获取次数');
                     return;
                 }
-                if (isSpinning) return; // 动画期间不可点击
+                if (isSpinning) return;
                 drawTimes += 1;
                 updateTimesDisplay();
-                // 可选提示
-                // alert('签到成功！获得1次抽奖机会');
+                gameStatus.textContent = '签到成功 +1次';
+                gameStatus.className = 'game-status ready';
+                setTimeout(() => { if (!isSpinning) gameStatus.textContent = '点击开始按钮抽奖'; }, 1500);
             }
             
             // 格式化金额显示（带千位分隔符）
@@ -765,7 +773,7 @@
                 updateStartButtonState();
             }
             
-            // 初始化方块
+            // 初始化方块 (代金券显示特殊文案)
             function initBlocks() {
                 blocksGrid.innerHTML = '';
                 blocks = [];
@@ -775,8 +783,19 @@
                     block.dataset.index = index;
                     block.dataset.id = prize.id;
                     block.style.backgroundColor = prize.color;
+                    
+                    // 代金券显示特殊value
+                    let valueHtml = '';
+                    if (prize.id === 5) {
+                        valueHtml = '15元代金券';
+                    } else if (prize.value > 0) {
+                        valueHtml = prize.value.toFixed(2) + '元';
+                    } else {
+                        valueHtml = '祝福';
+                    }
+                    
                     block.innerHTML = `
-                        <div class="block-value">${prize.value > 0 ? prize.value.toFixed(2) + '元' : '祝福'}</div>
+                        <div class="block-value">${valueHtml}</div>
                         <div class="block-name">${prize.name}</div>
                     `;
                     blocksGrid.appendChild(block);
@@ -793,7 +812,7 @@
                 }
             }
             
-            // 开始抽奖 (修改：消耗次数)
+            // 开始抽奖 (消耗次数)
             function startLottery() {
                 if (!isActivityActive) { alert("当前不是活动时间，无法抽奖！"); return; }
                 if (isSpinning) return;
@@ -802,13 +821,12 @@
                     return;
                 }
                 
-                // 消耗一次次数
                 drawTimes -= 1;
-                updateTimesDisplay();          // 更新显示并保存
+                updateTimesDisplay();
                 
                 isSpinning = true;
                 startBtn.disabled = true;
-                taskBtn.disabled = true;        // 抽奖过程中任务按钮禁用
+                taskBtn.disabled = true;
                 gameStatus.textContent = "抽奖进行中...";
                 gameStatus.className = "game-status waiting";
                 resultModal.style.display = 'none';
@@ -817,8 +835,8 @@
                 const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
                 
                 const baseMoves = 20;
-                const weightBonus = 85 - selectedPrize.weight;
-                const totalMoves = baseMoves + weightBonus;
+                const weightBonus = 65 - selectedPrize.weight; // 调整使转动圈数略有差异
+                const totalMoves = baseMoves + Math.max(0, weightBonus);
                 
                 let currentMove = 0;
                 const initialSpeed = 100;
@@ -861,12 +879,13 @@
                 return weightArray[randomIndex];
             }
             
+            // 抽奖结束处理
             function finishLottery(prizeIndex) {
                 const prize = prizes[prizeIndex];
                 currentPrize = prize;
                 
-                // 扣除奖金（只有现金红包才扣）
-                if (prize.hasPrize) {
+                // 扣除奖金：只有现金红包(isCash=true)才扣
+                if (prize.isCash) {
                     totalBalance -= prize.value;
                     if (totalBalance < 0) totalBalance = 0;
                 }
@@ -876,47 +895,76 @@
                 showResult(prize);
                 
                 isSpinning = false;
-                // 抽奖结束，更新按钮状态（可能次数为0，禁用开始按钮）
-                updateStartButtonState();
-                // 如果还有次数，任务按钮恢复可用（updateStartButtonState已处理）
+                updateStartButtonState();  // 可能次数为0禁用开始
+                
+                // ===== 再来一抽概率触发 (15%概率) =====
+                if (isActivityActive && !isSpinning) {  // 确保活动开启且不在旋转中
+                    const extraChance = Math.random() < 0.15; // 15% 触发
+                    if (extraChance) {
+                        // 增加一次抽奖机会
+                        drawTimes += 1;
+                        updateTimesDisplay();
+                        // 绽放烟花
+                        confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
+                        confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.2 }, colors: ['#ffd700', '#ff9800'] });
+                        confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.8 }, colors: ['#4caf50', '#2196f3'] });
+                        // 状态栏提示
+                        gameStatus.textContent = '✨ 恭喜获得“再来一抽”！次数+1 ✨';
+                        gameStatus.className = 'game-status extra';
+                        setTimeout(() => {
+                            if (!isSpinning) gameStatus.textContent = '点击开始按钮抽奖';
+                            gameStatus.className = 'game-status ready';
+                        }, 3000);
+                    }
+                }
             }
             
             function showResult(prize) {
-                resultTitle.textContent = prize.hasPrize ? "恭喜您中奖了！" : "新年祝福！";
-                resultAmount.textContent = prize.hasPrize ? prize.value.toFixed(2) + " 元" : "福气满满";
+                resultTitle.textContent = prize.hasPrize ? "恭喜您获得奖励！" : "新年祝福！";
+                // 代金券显示特殊金额文案
+                if (prize.id === 5) {
+                    resultAmount.textContent = "15元代金券";
+                } else if (prize.value > 0) {
+                    resultAmount.textContent = prize.value.toFixed(2) + " 元";
+                } else {
+                    resultAmount.textContent = "福气满满";
+                }
                 resultMessage.textContent = prize.message;
+                
                 if (prize.hasPrize) {
                     qrSection.style.display = 'inline-block';
+                    // 代金券二维码提示语更改
+                    if (prize.id === 5) {
+                        qrText.textContent = "扫码领取代金券";
+                    } else {
+                        qrText.textContent = "扫码领取红包";
+                    }
                     qrImage.innerHTML = '<img src="https://longsstudio.github.io/-123panal.png" alt="收款二维码" onerror="this.src=\'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年快乐\'">';
-                    qrText.textContent = "扫码领取红包";
                 } else {
                     qrSection.style.display = 'none';
                 }
                 resultModal.style.display = 'flex';
             }
             
-            // 确认按钮：跳转微信（仅当有现金红包时）
+            // 确认按钮：只有现金红包才跳转微信
             function handleConfirm() {
                 resultModal.style.display = 'none';
-                if (currentPrize && currentPrize.hasPrize) {
+                if (currentPrize && currentPrize.isCash) {
                     window.location.href = 'weixin://';
                 }
-                // 不清空currentPrize，但只跳转一次，再次点击确认不会跳转，因为弹窗已关
+                // 代金券或其他不跳转
             }
             
             // 初始化游戏
             function initGame() {
                 checkActivityTime();
                 initBlocks();
-                loadDrawTimes();                 // 加载抽奖次数
+                loadDrawTimes();
                 balanceDisplay.textContent = formatBalance(totalBalance);
-                // 任务按钮监听
+                
                 taskBtn.addEventListener('click', handleTask);
-                // 抽奖按钮
                 startBtn.addEventListener('click', startLottery);
-                // 确认按钮
                 confirmBtn.addEventListener('click', handleConfirm);
-                // 关闭按钮
                 modalClose.addEventListener('click', function() { resultModal.style.display = 'none'; });
                 resultModal.addEventListener('click', function(e) { if (e.target === resultModal) resultModal.style.display = 'none'; });
             }
