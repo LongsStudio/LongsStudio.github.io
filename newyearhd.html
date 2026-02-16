@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>智慧新年抽奖</title>
+    <title>智慧白板新年红包抽奖</title>
     <!-- 烟花彩带库 (canvas-confetti) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
@@ -625,7 +625,7 @@
         <div class="discover-content">
             <button class="modal-close" id="discoverModalClose">&times;</button>
             <div class="discover-title">
-                <span>✨发现精彩✨</span>
+                <span>✨ 发现精彩 ✨</span>
             </div>
             <div class="discover-qr-wrap">
                 <div class="discover-qr-img">
@@ -639,7 +639,7 @@
             <div class="url-container">
                 <input type="text" class="url-text" id="discoverPageUrl" readonly value="">
                 <button class="copy-url-btn" id="copyUrlBtn">
-                    📋 复制网址
+                    📋 复制分享文案
                 </button>
             </div>
             <div class="discover-footer">
@@ -986,7 +986,7 @@
             
             initGame();
             
-            // ================== 发现功能（保持不变）==================
+            // ================== 发现功能（复制指定文案后跳转微信，带降级方案）==================
             const discoverTrigger = document.getElementById('discoverTrigger');
             const discoverModal = document.getElementById('discoverModal');
             const discoverModalClose = document.getElementById('discoverModalClose');
@@ -1006,18 +1006,75 @@
                 discoverModal.style.display = 'none';
             }
             
-            function copyTextToClipboard(text, successMsg = '复制成功！') {
-                if (!text) return alert('无内容可复制');
-                navigator.clipboard.writeText(text).then(() => alert(successMsg))
-                    .catch(() => alert('复制失败，请手动复制'));
+            // 通用的复制函数，带降级方案
+            function copyTextWithFallback(text, successCallback) {
+                // 使用现代 Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        successCallback();
+                    }).catch(err => {
+                        console.warn('Clipboard API 失败，使用备用方案:', err);
+                        fallbackCopy(text, successCallback);
+                    });
+                } else {
+                    fallbackCopy(text, successCallback);
+                }
             }
+            
+            function fallbackCopy(text, successCallback) {
+                // 创建临时文本域
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                // 使元素不可见
+                textArea.style.position = 'fixed';
+                textArea.style.top = '-999px';
+                textArea.style.left = '-999px';
+                textArea.style.width = '2em';
+                textArea.style.height = '2em';
+                textArea.style.padding = '0';
+                textArea.style.border = 'none';
+                textArea.style.outline = 'none';
+                textArea.style.boxShadow = 'none';
+                textArea.style.background = 'transparent';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        successCallback();
+                    } else {
+                        alert('复制失败，请手动复制文案：\n' + text);
+                    }
+                } catch (err) {
+                    alert('复制失败，请手动复制文案：\n' + text);
+                }
+                
+                document.body.removeChild(textArea);
+            }
+            
+            // 复制二维码地址 (保留原行为，不跳转)
+            copyQrBtn.addEventListener('click', () => {
+                copyTextWithFallback(QR_IMAGE_URL, () => {
+                    alert('二维码地址已复制！');
+                });
+            });
+            
+            // 复制网址按钮：复制指定文案后跳转微信
+            copyUrlBtn.addEventListener('click', function() {
+                const shareText = '快快快，去智慧白板安卓版抽红包https://longsstudio.github.io/newyearhd.html';
+                copyTextWithFallback(shareText, () => {
+                    alert('分享文案已复制！即将跳转微信，请粘贴发送给好友');
+                    // 尝试打开微信 (适合移动端)
+                    window.location.href = 'weixin://';
+                });
+            });
             
             discoverTrigger.addEventListener('click', (e) => { e.stopPropagation(); openDiscoverModal(); });
             discoverModalClose.addEventListener('click', closeDiscoverModal);
             discoverConfirmBtn.addEventListener('click', closeDiscoverModal);
             discoverModal.addEventListener('click', (e) => { if (e.target === discoverModal) closeDiscoverModal(); });
-            copyQrBtn.addEventListener('click', () => copyTextToClipboard(QR_IMAGE_URL, '二维码地址已复制！'));
-            copyUrlBtn.addEventListener('click', () => copyTextToClipboard(discoverPageUrl.value, '网页地址已复制！'));
         });
     </script>
 </body>
