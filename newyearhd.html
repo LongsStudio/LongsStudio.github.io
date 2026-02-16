@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>智慧白板新年抽奖</title>
+    <title>智慧新年抽奖</title>
     <!-- 烟花彩带库 (canvas-confetti) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
@@ -574,7 +574,7 @@
                 <span style="font-size:1.1rem;">🔍</span> 发现
             </div>
             <h1 class="title">🧧智慧陪你过大年</h1>
-            <p class="subtitle">做任务得次数，十亿奖金等你拿！</p>
+            <p class="subtitle">每日签到仅限一次，十亿奖金等你拿！</p>
             <div class="activity-info" id="activityInfo">活动时间2026年2月16日-2月24日</div>
         </div>
         
@@ -582,7 +582,7 @@
             <div class="blocks-grid" id="blocksGrid"></div>
         </div>
         
-        <!-- 抽奖次数显示 + 做任务按钮 -->
+        <!-- 抽奖次数显示 + 每日签到按钮 (每天仅一次) -->
         <div class="task-section">
             <div class="times-badge">
                 🎟️ 剩余次数 <span id="drawTimesDisplay" class="times-number">0</span>
@@ -625,7 +625,7 @@
         <div class="discover-content">
             <button class="modal-close" id="discoverModalClose">&times;</button>
             <div class="discover-title">
-                <span>✨ 发现精彩 ✨</span>
+                <span>✨发现精彩✨</span>
             </div>
             <div class="discover-qr-wrap">
                 <div class="discover-qr-img">
@@ -650,14 +650,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ================== 红包抽奖逻辑（整合任务次数 & 持久化）==================
-            // 奖项配置：将0.01元红包替换为“15元智慧白板代金券”，权重提高至25 (原5)，同时祝福权重降低至75，让代金券概率≈20%
+            // ================== 红包抽奖逻辑（整合任务次数 & 每日签到限制）==================
+            // 奖项配置：代金券权重25，祝福权重65，其他不变
             const prizes = [
                 { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true, isCash: true },
                 { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true, isCash: true },
                 { id: 3, name: "0.2元红包", value: 0.20, weight: 3, color: "#2196F3", message: "恭喜获得0.2元红包！福气满满！", hasPrize: true, isCash: true },
                 { id: 4, name: "0.1元红包", value: 0.10, weight: 4, color: "#9C27B0", message: "恭喜获得0.1元红包！吉祥如意！", hasPrize: true, isCash: true },
-                { id: 5, name: "15元智慧白板代金券", value: 15, weight: 25, color: "#FF5722", message: "恭喜获得15元智慧白板代金券！快去领取吧！", hasPrize: true, isCash: false },  // 代金券不扣除余额，但显示二维码
+                { id: 5, name: "15元智慧白板代金券", value: 15, weight: 25, color: "#FF5722", message: "恭喜获得15元智慧白板代金券！快去领取吧！", hasPrize: true, isCash: false },
                 { id: 6, name: "新年祝福", value: 0.00, weight: 65, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false, isCash: false }
             ];
             
@@ -695,6 +695,8 @@
             // 抽奖次数（localStorage持久化）
             let drawTimes = 0;
             const STORAGE_KEY = 'newYearDrawTimes';
+            // 每日签到标记 (存储上次签到日期)
+            const SIGN_DATE_KEY = 'lastSignDate';
             
             // 初始化或加载次数
             function loadDrawTimes() {
@@ -729,16 +731,29 @@
                 }
             }
             
-            // 任务按钮点击：每日签到 +1次
+            // 任务按钮点击：每日签到，每天仅限一次
             function handleTask() {
                 if (!isActivityActive) {
                     alert('活动未开始或已结束，无法获取次数');
                     return;
                 }
                 if (isSpinning) return;
+                
+                // 获取当前日期 (YYYY-MM-DD)
+                const today = new Date().toLocaleDateString('en-CA'); // 格式 '2026-02-16'
+                const lastSign = localStorage.getItem(SIGN_DATE_KEY);
+                
+                if (lastSign === today) {
+                    alert('今天已经签过到了，明天再来吧！');
+                    return;
+                }
+                
+                // 签到成功
                 drawTimes += 1;
                 updateTimesDisplay();
-                gameStatus.textContent = '签到成功 +1次';
+                localStorage.setItem(SIGN_DATE_KEY, today);  // 记录签到日期
+                
+                gameStatus.textContent = '✅ 签到成功 +1次';
                 gameStatus.className = 'game-status ready';
                 setTimeout(() => { if (!isSpinning) gameStatus.textContent = '点击开始按钮抽奖'; }, 1500);
             }
@@ -835,7 +850,7 @@
                 const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
                 
                 const baseMoves = 20;
-                const weightBonus = 65 - selectedPrize.weight; // 调整使转动圈数略有差异
+                const weightBonus = 65 - selectedPrize.weight;
                 const totalMoves = baseMoves + Math.max(0, weightBonus);
                 
                 let currentMove = 0;
