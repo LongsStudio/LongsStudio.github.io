@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>智慧白板新年红包抽奖</title>
-    <!-- 烟花彩带库 (canvas-confetti) -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <!-- 烟花彩带库 (canvas-confetti) 使用国内CDN加速 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -629,7 +629,7 @@
             </div>
             <div class="discover-qr-wrap">
                 <div class="discover-qr-img">
-                    <img src="https://longsstudio.github.io/newyearhq.png" alt="发现二维码" id="discoverQrImage" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年发现页';">
+                    <img src="https://longsstudio.github.io/newyearhq.png" alt="发现二维码" id="discoverQrImage" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年发现页';" loading="lazy">
                 </div>
                 <button class="copy-qr-btn" id="copyQrBtn">
                     📋 复制二维码地址
@@ -648,10 +648,13 @@
         </div>
     </div>
 
+    <!-- 用于降级复制的隐藏文本域 (复用) -->
+    <textarea id="hiddenCopyTextarea" style="position:fixed; top:-100px; left:-100px; width:1px; height:1px; opacity:0; pointer-events:none;"></textarea>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ================== 红包抽奖逻辑（整合任务次数 & 每日签到限制）==================
-            // 奖项配置：代金券权重25，祝福权重65，其他不变
+            // ================== 红包抽奖逻辑（优化性能版）==================
+            // 奖项配置
             const prizes = [
                 { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true, isCash: true },
                 { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true, isCash: true },
@@ -660,6 +663,12 @@
                 { id: 5, name: "15元智慧白板代金券", value: 15, weight: 25, color: "#FF5722", message: "恭喜获得15元智慧白板代金券！快去领取吧！", hasPrize: true, isCash: false },
                 { id: 6, name: "新年祝福", value: 0.00, weight: 65, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false, isCash: false }
             ];
+            
+            // 预计算权重数组（只计算一次，提高抽奖性能）
+            const weightArray = [];
+            prizes.forEach(prize => {
+                for (let i = 0; i < prize.weight; i++) weightArray.push(prize);
+            });
             
             // DOM 元素
             const blocksGrid = document.getElementById('blocksGrid');
@@ -827,7 +836,7 @@
                 }
             }
             
-            // 开始抽奖 (消耗次数)
+            // 开始抽奖 (消耗次数) - 使用预计算权重数组
             function startLottery() {
                 if (!isActivityActive) { alert("当前不是活动时间，无法抽奖！"); return; }
                 if (isSpinning) return;
@@ -846,7 +855,9 @@
                 gameStatus.className = "game-status waiting";
                 resultModal.style.display = 'none';
                 
-                const selectedPrize = selectPrizeByWeight();
+                // 直接从预计算权重数组随机选取
+                const randomIndex = Math.floor(Math.random() * weightArray.length);
+                const selectedPrize = weightArray[randomIndex];
                 const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
                 
                 const baseMoves = 20;
@@ -885,15 +896,6 @@
                 moveAnimation();
             }
             
-            function selectPrizeByWeight() {
-                const weightArray = [];
-                prizes.forEach(prize => {
-                    for (let i = 0; i < prize.weight; i++) weightArray.push(prize);
-                });
-                const randomIndex = Math.floor(Math.random() * weightArray.length);
-                return weightArray[randomIndex];
-            }
-            
             // 抽奖结束处理
             function finishLottery(prizeIndex) {
                 const prize = prizes[prizeIndex];
@@ -913,17 +915,14 @@
                 updateStartButtonState();  // 可能次数为0禁用开始
                 
                 // ===== 再来一抽概率触发 (15%概率) =====
-                if (isActivityActive && !isSpinning) {  // 确保活动开启且不在旋转中
+                if (isActivityActive && !isSpinning) {
                     const extraChance = Math.random() < 0.15; // 15% 触发
                     if (extraChance) {
-                        // 增加一次抽奖机会
                         drawTimes += 1;
                         updateTimesDisplay();
-                        // 绽放烟花
                         confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
                         confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.2 }, colors: ['#ffd700', '#ff9800'] });
                         confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.8 }, colors: ['#4caf50', '#2196f3'] });
-                        // 状态栏提示
                         gameStatus.textContent = '✨ 恭喜获得“再来一抽”！次数+1 ✨';
                         gameStatus.className = 'game-status extra';
                         setTimeout(() => {
@@ -936,7 +935,6 @@
             
             function showResult(prize) {
                 resultTitle.textContent = prize.hasPrize ? "恭喜您获得奖励！" : "新年祝福！";
-                // 代金券显示特殊金额文案
                 if (prize.id === 5) {
                     resultAmount.textContent = "15元代金券";
                 } else if (prize.value > 0) {
@@ -948,13 +946,12 @@
                 
                 if (prize.hasPrize) {
                     qrSection.style.display = 'inline-block';
-                    // 代金券二维码提示语更改
                     if (prize.id === 5) {
                         qrText.textContent = "扫码领取代金券";
                     } else {
                         qrText.textContent = "扫码领取红包";
                     }
-                    qrImage.innerHTML = '<img src="https://longsstudio.github.io/-123panal.png" alt="收款二维码" onerror="this.src=\'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年快乐\'">';
+                    qrImage.innerHTML = '<img src="https://longsstudio.github.io/-123panal.png" alt="收款二维码" loading="lazy" onerror="this.src=\'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年快乐\'">';
                 } else {
                     qrSection.style.display = 'none';
                 }
@@ -967,7 +964,6 @@
                 if (currentPrize && currentPrize.isCash) {
                     window.location.href = 'weixin://';
                 }
-                // 代金券或其他不跳转
             }
             
             // 初始化游戏
@@ -986,7 +982,7 @@
             
             initGame();
             
-            // ================== 发现功能（复制指定文案后跳转微信，带降级方案）==================
+            // ================== 发现功能（复制降级方案优化，使用隐藏复用textarea）==================
             const discoverTrigger = document.getElementById('discoverTrigger');
             const discoverModal = document.getElementById('discoverModal');
             const discoverModalClose = document.getElementById('discoverModalClose');
@@ -1006,14 +1002,12 @@
                 discoverModal.style.display = 'none';
             }
             
-            // 通用的复制函数，带降级方案
+            // 复用隐藏的textarea进行降级复制
+            const hiddenTextarea = document.getElementById('hiddenCopyTextarea');
+            
             function copyTextWithFallback(text, successCallback) {
-                // 使用现代 Clipboard API
                 if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        successCallback();
-                    }).catch(err => {
-                        console.warn('Clipboard API 失败，使用备用方案:', err);
+                    navigator.clipboard.writeText(text).then(successCallback).catch(() => {
                         fallbackCopy(text, successCallback);
                     });
                 } else {
@@ -1022,24 +1016,9 @@
             }
             
             function fallbackCopy(text, successCallback) {
-                // 创建临时文本域
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                // 使元素不可见
-                textArea.style.position = 'fixed';
-                textArea.style.top = '-999px';
-                textArea.style.left = '-999px';
-                textArea.style.width = '2em';
-                textArea.style.height = '2em';
-                textArea.style.padding = '0';
-                textArea.style.border = 'none';
-                textArea.style.outline = 'none';
-                textArea.style.boxShadow = 'none';
-                textArea.style.background = 'transparent';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
+                hiddenTextarea.value = text;
+                hiddenTextarea.style.display = 'block'; // 确保可以选中
+                hiddenTextarea.select();
                 try {
                     const successful = document.execCommand('copy');
                     if (successful) {
@@ -1050,23 +1029,17 @@
                 } catch (err) {
                     alert('复制失败，请手动复制文案：\n' + text);
                 }
-                
-                document.body.removeChild(textArea);
+                hiddenTextarea.style.display = 'none';
             }
             
-            // 复制二维码地址 (保留原行为，不跳转)
             copyQrBtn.addEventListener('click', () => {
-                copyTextWithFallback(QR_IMAGE_URL, () => {
-                    alert('二维码地址已复制！');
-                });
+                copyTextWithFallback(QR_IMAGE_URL, () => alert('二维码地址已复制！'));
             });
             
-            // 复制网址按钮：复制指定文案后跳转微信
             copyUrlBtn.addEventListener('click', function() {
                 const shareText = '快快快，去智慧白板安卓版抽红包https://longsstudio.github.io/newyearhd.html';
                 copyTextWithFallback(shareText, () => {
                     alert('分享文案已复制！即将跳转微信，请粘贴发送给好友');
-                    // 尝试打开微信 (适合移动端)
                     window.location.href = 'weixin://';
                 });
             });
