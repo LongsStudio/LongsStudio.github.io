@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>公告</title>
+    <title>公告 · 智慧白板</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -379,9 +379,9 @@
             <!-- 公告将通过JS动态添加 -->
         </div>
         
-        <!-- 底部 -->
+        <!-- 底部 (年份已更新至2026) -->
         <div class="footer">
-            <p>© 2025 Longs Studio | 公告信息实时更新</p>
+            <p>© 2026 Longs Studio | 公告信息实时更新</p>
             <p>本页面为LSBOX图片查看器的官方公告页面，所有信息均为官方发布</p>
         </div>
     </div>
@@ -392,7 +392,7 @@
     </button>
     
     <script>
-        // 模拟公告数据
+        // 模拟公告数据 - 新增一条2026-03-12通知
         const announcements = [
             {
                 id: 1,
@@ -405,8 +405,8 @@
                 views: 1250
             },
             {
-                id: 1,
-                time: "2026-01-9 12:30",
+                id: 1, // 保留原有id重复 (但无影响)
+                time: "2026-01-09 12:30",
                 type: "highlight",
                 typeText: "重要通知",
                 title: "LSBOX查看器移动版本 v1.0 正式发布",
@@ -463,6 +463,22 @@
                 content: "值此国庆佳节，LSBOX开发团队向所有用户致以最诚挚的祝福！<br><br>祝愿伟大的祖国繁荣昌盛，国泰民安！<br>祝愿所有用户节日快乐，阖家幸福！<br><br>为庆祝国庆，10月1日-10月7日期间，所有用户均可免费使用高级功能。",
                 author: "LSBOX全体团队",
                 views: 2890
+            },
+            // ===== 新增公告：2026-03-12 暂停更新通知 =====
+            {
+                id: 9,
+                time: "2026-03-12 10:00",
+                type: "info",                // 使用info样式 (蓝绿色调)
+                typeText: "开发动态",          // 自定义标签
+                title: "关于智慧白板暂停更新的说明",
+                content: `
+                    <p>亲爱的用户：</p>
+                    <p>为了给大家带来更优质的服务和体验，我们决定将智慧白板的更新计划稍作调整。目前团队正专注于一项更加重要的内部项目开发，因此智慧白板将<strong>暂停更新一段时间</strong>。这只是短暂的暂停，预计在<strong>2026年6月30日左右</strong>恢复正常更新。</p>
+                    <p>在此期间，现有版本的所有功能均可正常使用。同时，我们也在积极筹备下一个大版本，<strong>下个版本将接入AI功能</strong>，敬请期待！</p>
+                    <p>感谢大家一直以来的支持与理解！</p>
+                `,
+                author: "LongsStudio & lao 6 OS 开发团队",
+                views: 486
             }
         ];
 
