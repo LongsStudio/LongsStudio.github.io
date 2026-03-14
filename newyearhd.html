@@ -2,20 +2,18 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>智慧白板新年红包抽奖</title>
-    <!-- 烟花彩带库 (canvas-confetti) 使用国内CDN加速 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧白板 - 智能对话助手</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Microsoft YaHei', sans-serif;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,544 +23,327 @@
         
         .container {
             width: 100%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.1);
+            max-width: 800px;
+            height: 85vh;
+            background-color: white;
             border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
         
         .header {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .discover-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(255, 215, 0, 0.9);
-            color: #b71c1c;
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-            border: 1px solid #FFD700;
-            z-index: 20;
-        }
-        .discover-btn:hover {
-            background: #FFD700;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-        
-        .title {
-            font-size: 2rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            padding-right: 70px;
-        }
-        
-        .subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
+            background: linear-gradient(90deg, #0066cc 0%, #003366 100%);
             color: white;
-            padding-right: 60px;
-        }
-        
-        .activity-info {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 15px;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            display: inline-block;
-        }
-        
-        .blocks-area {
-            position: relative;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto 30px;
-        }
-        
-        .blocks-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-            aspect-ratio: 3/2;
-        }
-        
-        .block {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: default;
         }
         
-        .block.active {
-            background: linear-gradient(135deg, #FFD700 0%, #FF9800 100%);
-            transform: scale(1.05);
-            border-color: #FFD700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+        .header-content {
+            flex: 1;
         }
         
-        .block-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #FFD700;
+        .header h1 {
+            font-size: 1.8rem;
             margin-bottom: 5px;
         }
         
-        .block.active .block-value {
-            color: #d32f2f;
-        }
-        
-        .block-name {
+        .header p {
+            opacity: 0.8;
             font-size: 0.9rem;
-            color: white;
         }
         
-        .block.active .block-name {
-            color: #333;
-            font-weight: bold;
-        }
-        
-        .game-status {
-            font-size: 1rem;
-            margin: 10px 0;
-            padding: 8px 15px;
-            border-radius: 15px;
-            display: inline-block;
-            transition: background 0.3s;
-        }
-        
-        .game-status.ready {
-            background: rgba(76, 175, 80, 0.2);
-            color: #C8E6C9;
-        }
-        
-        .game-status.waiting {
-            background: rgba(255, 193, 7, 0.2);
-            color: #FFF9C4;
-        }
-        
-        .game-status.extra {
-            background: rgba(255, 87, 34, 0.3);
-            color: #FFCCBC;
-            font-weight: bold;
-            border: 1px solid #FF9800;
-        }
-        
-        .game-status.disabled {
-            background: rgba(244, 67, 54, 0.2);
-            color: #FFCDD2;
-        }
-        
-        .controls {
-            margin: 20px 0;
-        }
-        
-        .btn {
-            background: linear-gradient(to bottom, #4CAF50, #388E3C);
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            border-radius: 25px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
-            min-width: 150px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        .btn:disabled {
-            background: linear-gradient(to bottom, #666, #444);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        
-        .task-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0 10px;
-            flex-wrap: wrap;
-        }
-        
-        .times-badge {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 30px;
-            padding: 8px 20px;
-            color: white;
-            font-size: 1.1rem;
-            border: 1px solid #FFD700;
-            backdrop-filter: blur(2px);
-        }
-        
-        .times-number {
-            font-weight: bold;
-            color: #FFD700;
-            font-size: 1.4rem;
-            margin-left: 5px;
-        }
-        
-        .task-btn {
-            background: linear-gradient(to bottom, #FF9800, #F57C00);
-            border: none;
-            padding: 10px 25px;
-            border-radius: 40px;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            border: 1px solid #FFB74D;
-            transition: 0.2s;
-        }
-        .task-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-        }
-        .task-btn:disabled {
-            opacity: 0.5;
-            transform: none;
-            pointer-events: none;
-            filter: grayscale(0.6);
-        }
-        
-        .balance-info {
-            font-size: 1.2rem;
-            margin: 15px 0;
+        /* 语音开关样式 */
+        .voice-toggle {
             background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 25px;
-            display: inline-block;
-            color: white;
-        }
-        
-        .balance-amount {
-            font-weight: bold;
-            color: #FFD700;
-        }
-        
-        .result-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .result-content {
-            background: linear-gradient(135deg, #ffd700 0%, #ff9800 100%);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            border: 3px solid #fff;
-            position: relative;
-            animation: modalAppear 0.3s ease-out;
-        }
-        
-        @keyframes modalAppear {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .result-title {
-            font-size: 1.8rem;
-            color: #c62828;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        .result-amount {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #c62828;
-            margin: 15px 0;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        .result-message {
-            font-size: 1.1rem;
-            color: #333;
-            margin: 15px 0;
-            line-height: 1.5;
-        }
-        
-        .qr-section {
-            margin: 15px auto;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .qr-image img {
-            width: 150px;
-            height: 150px;
-            display: block;
-        }
-        
-        .qr-text {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #333;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #c62828;
-            color: white;
             border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .discover-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            backdrop-filter: blur(3px);
-        }
-        
-        .discover-content {
-            background: white;
-            border-radius: 24px;
-            padding: 30px 20px;
-            text-align: center;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-            position: relative;
-            animation: modalAppear 0.3s ease-out;
-            border: 2px solid #FFD700;
-        }
-        
-        .discover-title {
-            font-size: 1.8rem;
-            color: #b71c1c;
-            margin-bottom: 10px;
-            font-weight: bold;
+            border-radius: 20px;
+            color: white;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
         
-        .discover-qr-wrap {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 16px;
-            margin: 10px 0 15px;
+        .voice-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .voice-toggle.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .voice-icon {
+            font-size: 1.1rem;
+        }
+        
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: 15px;
         }
         
-        .discover-qr-img {
-            width: 160px;
-            height: 160px;
-            background: #fff;
-            padding: 5px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            margin-bottom: 12px;
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
         }
         
-        .discover-qr-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .copy-qr-btn {
-            background: #ff9800;
-            border: none;
+        .user-message {
+            background-color: #0066cc;
             color: white;
-            padding: 8px 25px;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid #e68900;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: 0.2s;
-            margin-top: 5px;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
         }
-        .copy-qr-btn:hover {
-            background: #f57c00;
+        
+        .bot-message {
+            background-color: #f0f2f5;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        /* 预设问题区域新样式 - 移至输入区上方 */
+        .preset-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 20px 8px 20px;
+            background-color: #f9fafc;
+            border-top: 1px solid #eee;
+            justify-content: center;
+        }
+        
+        .preset-btn {
+            background-color: #e6f2ff;
+            color: #0066cc;
+            border: 1px solid #b3d9ff;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .preset-btn:hover {
+            background-color: #0066cc;
+            color: white;
+        }
+        
+        .input-area {
+            padding: 8px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        /* 修改后的输入行布局：发送按钮在左，输入框在中，加号在右 */
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        /* 发送按钮移至左侧 */
+        button#sendButton {
+            background: linear-gradient(90deg, #0066cc 0%, #003366 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            height: 50px;
+            flex-shrink: 0;
+        }
+        
+        button#sendButton:hover {
+            opacity: 0.9;
             transform: scale(1.02);
         }
         
-        .url-container {
-            background: #f0f0f0;
-            border-radius: 50px;
-            padding: 6px 12px 6px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 15px 0 5px;
-            border: 1px solid #ccc;
-        }
-        .url-text {
-            font-size: 0.85rem;
-            color: #333;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 180px;
-            background: transparent;
-            border: none;
-            outline: none;
-            padding: 5px 0;
-            font-family: monospace;
-        }
-        .copy-url-btn {
-            background: #2c3e50;
-            border: none;
-            color: white;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            border: 1px solid #1e2b38;
-            transition: 0.2s;
-            white-space: nowrap;
-        }
-        .copy-url-btn:hover {
-            background: #1e2b38;
+        button#sendButton:active {
+            transform: scale(0.98);
         }
         
-        .discover-footer {
-            margin-top: 20px;
+        /* 文本输入框 */
+        input#userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        input#userInput:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+        
+        /* 文件上传按钮样式 - 改为加号 */
+        .file-upload-btn {
+            background-color: #f0f2f5;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
-        }
-        .discover-close-btn {
-            background: #b71c1c;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: bold;
+            align-items: center;
             cursor: pointer;
-            border: 1px solid #8e1515;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            min-width: 120px;
-        }
-        .discover-close-btn:hover {
-            background: #a01515;
+            transition: all 0.2s;
+            font-size: 1.8rem;
+            flex-shrink: 0;
         }
         
-        @media (max-width: 480px) {
+        .file-upload-btn:hover {
+            background-color: #e6f2ff;
+            border-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .file-upload-btn input[type="file"] {
+            display: none;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: #f0f2f5;
+            color: #666;
+            padding: 12px 18px;
+            border-radius: 20px;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #999;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+        
+        .image-generation {
+            background-color: #e6f7ff;
+            border-left: 4px solid #0066cc;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        
+        .error-message {
+            background-color: #fff2f0;
+            border-left: 4px solid #ff4d4f;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        
+        /* 文件信息预览样式 */
+        .file-info {
+            padding: 8px 12px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #555;
+            border: 1px dashed #ccc;
+            margin-top: 5px;
+            display: none; /* 默认隐藏，有文件时显示 */
+        }
+        
+        .file-info span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .file-info .file-name {
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .remove-file {
+            color: #ff4d4f;
+            cursor: pointer;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
             .container {
-                padding: 15px;
+                height: 90vh;
+                border-radius: 10px;
             }
-            .title {
-                font-size: 1.6rem;
-                padding-right: 60px;
+            
+            .header {
+                padding: 15px 20px;
             }
-            .subtitle {
-                padding-right: 50px;
-                font-size: 0.9rem;
+            
+            .header h1 {
+                font-size: 1.5rem;
             }
-            .discover-btn {
-                padding: 5px 12px;
-                font-size: 0.85rem;
-                top: 0;
-            }
-            .blocks-grid {
-                gap: 10px;
-            }
-            .block {
-                padding: 12px;
-            }
-            .block-value {
-                font-size: 1.1rem;
-            }
-            .block-name {
+            
+            .voice-toggle {
+                padding: 6px 12px;
                 font-size: 0.8rem;
             }
-            .discover-qr-img {
-                width: 140px;
-                height: 140px;
+            
+            .message {
+                max-width: 90%;
             }
-            .task-section {
-                gap: 10px;
+            
+            .preset-questions {
+                padding: 10px 15px 6px 15px;
             }
-            .times-badge {
-                font-size: 1rem;
-                padding: 6px 15px;
+            
+            .preset-btn {
+                font-size: 0.75rem;
+                padding: 5px 10px;
             }
-            .task-btn {
-                padding: 8px 20px;
-                font-size: 0.9rem;
+            
+            .input-area {
+                padding: 8px 15px 15px 15px;
+            }
+            
+            button#sendButton {
+                padding: 0 20px;
             }
         }
     </style>
@@ -570,485 +351,519 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="discover-btn" id="discoverTrigger">
-                <span style="font-size:1.1rem;">🔍</span> 发现
+            <div class="header-content">
+                <h1>智慧白板</h1>
+                <p>智能对话助手 - 支持文件上传与语音播报</p>
             </div>
-            <h1 class="title">🧧智慧陪你过大年</h1>
-            <p class="subtitle">每日签到仅限一次，十亿奖金等你拿！</p>
-            <div class="activity-info" id="activityInfo">活动时间2026年2月16日-2月24日</div>
-        </div>
-        
-        <div class="blocks-area">
-            <div class="blocks-grid" id="blocksGrid"></div>
-        </div>
-        
-        <!-- 抽奖次数显示 + 每日签到按钮 (每天仅一次) -->
-        <div class="task-section">
-            <div class="times-badge">
-                🎟️ 剩余次数 <span id="drawTimesDisplay" class="times-number">0</span>
-            </div>
-            <button class="task-btn" id="taskBtn">
-                ✅ 每日签到 +1次
+            <!-- 语音开关按钮 -->
+            <button class="voice-toggle" id="voiceToggle" title="点击开启/关闭语音播报">
+                <span class="voice-icon">🔇</span>
+                <span class="voice-text"></span>
             </button>
         </div>
         
-        <div class="game-status" id="gameStatus">点击开始按钮抽奖</div>
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot-message">
+                您好！我是智慧白板，您的智能对话助手。我可以回答各种问题，提供信息，甚至尝试为您生成图片。现在我还支持上传图片和文件，并且可以语音播报回复！请问有什么可以帮您的？
+            </div>
+        </div>
         
-        <div class="controls">
-            <button class="btn" id="startBtn">开始抽奖</button>
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span><span></span><span></span>
         </div>
         
-        <div class="balance-info">
-            剩余奖金: <span id="balanceDisplay" class="balance-amount">1,000,000,000.00</span> 元
+        <!-- 预设问题区域已移至输入区域上方 -->
+        <div class="preset-questions" id="presetQuestions">
+            <div class="preset-btn" data-question="你好">问候</div>
+            <div class="preset-btn" data-question="生成一张风景图片">生成图片</div>
+            <div class="preset-btn" data-question="今天天气怎么样">天气查询</div>
+            <div class="preset-btn" data-question="现在几点了">时间查询</div>
+            <div class="preset-btn" data-question="讲个笑话吧">幽默笑话</div>
+            <div class="preset-btn" data-question="你会做什么">功能介绍</div>
         </div>
-    </div>
-    
-    <!-- 抽奖结果弹窗 -->
-    <div class="result-modal" id="resultModal">
-        <div class="result-content">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <h2 class="result-title" id="resultTitle">恭喜您！</h2>
-            <div class="result-amount" id="resultAmount">1.00 元</div>
-            <p class="result-message" id="resultMessage">新年快乐！祝您财源广进！</p>
-            
-            <div class="qr-section" id="qrSection">
-                <div class="qr-image" id="qrImage"></div>
-                <div class="qr-text" id="qrText">扫码领取红包</div>
+        
+        <div class="input-area">
+            <!-- 文件信息预览区 -->
+            <div class="file-info" id="fileInfo">
+                <span>已选择文件: <span class="file-name" id="fileName"></span><span class="remove-file" id="removeFile">× 移除</span></span>
             </div>
             
-            <button class="btn" id="confirmBtn">确定</button>
-        </div>
-    </div>
-
-    <!-- 发现弹窗 -->
-    <div class="discover-modal" id="discoverModal">
-        <div class="discover-content">
-            <button class="modal-close" id="discoverModalClose">&times;</button>
-            <div class="discover-title">
-                <span>✨ 发现精彩 ✨</span>
-            </div>
-            <div class="discover-qr-wrap">
-                <div class="discover-qr-img">
-                    <img src="https://longsstudio.github.io/newyearhq.png" alt="发现二维码" id="discoverQrImage" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年发现页';" loading="lazy">
-                </div>
-                <button class="copy-qr-btn" id="copyQrBtn">
-                    📋 复制二维码地址
-                </button>
-            </div>
-            <div style="font-size:0.9rem; color:#555; margin-bottom:5px; text-align:left; padding-left:5px;">🌐 当前页面地址</div>
-            <div class="url-container">
-                <input type="text" class="url-text" id="discoverPageUrl" readonly value="">
-                <button class="copy-url-btn" id="copyUrlBtn">
-                    📋 复制分享文案
-                </button>
-            </div>
-            <div class="discover-footer">
-                <button class="discover-close-btn" id="discoverConfirmBtn">关 闭</button>
+            <div class="input-row">
+                <!-- 发送按钮在左侧 -->
+                <button id="sendButton">发送</button>
+                
+                <!-- 文本输入框在中间 -->
+                <input type="text" id="userInput" placeholder="输入您的问题或指令，或上传文件..." autocomplete="off">
+                
+                <!-- 文件上传按钮改为加号，在右侧 -->
+                <label class="file-upload-btn" for="fileUpload" title="上传图片或文件">
+                    +
+                    <input type="file" id="fileUpload" accept="image/*,.pdf,.doc,.docx,.txt">
+                </label>
             </div>
         </div>
     </div>
-
-    <!-- 用于降级复制的隐藏文本域 (复用) -->
-    <textarea id="hiddenCopyTextarea" style="position:fixed; top:-100px; left:-100px; width:1px; height:1px; opacity:0; pointer-events:none;"></textarea>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ================== 红包抽奖逻辑（优化性能版）==================
-            // 奖项配置
-            const prizes = [
-                { id: 1, name: "1元红包", value: 1.00, weight: 1, color: "#FFEB3B", message: "恭喜获得1元红包！新年开门红！", hasPrize: true, isCash: true },
-                { id: 2, name: "0.5元红包", value: 0.50, weight: 2, color: "#4CAF50", message: "恭喜获得0.5元红包！好运连连！", hasPrize: true, isCash: true },
-                { id: 3, name: "0.2元红包", value: 0.20, weight: 3, color: "#2196F3", message: "恭喜获得0.2元红包！福气满满！", hasPrize: true, isCash: true },
-                { id: 4, name: "0.1元红包", value: 0.10, weight: 4, color: "#9C27B0", message: "恭喜获得0.1元红包！吉祥如意！", hasPrize: true, isCash: true },
-                { id: 5, name: "15元智慧白板代金券", value: 15, weight: 25, color: "#FF5722", message: "恭喜获得15元智慧白板代金券！快去领取吧！", hasPrize: true, isCash: false },
-                { id: 6, name: "新年祝福", value: 0.00, weight: 65, color: "#F44336", message: "恭喜获得新年祝福！万事如意！", hasPrize: false, isCash: false }
-            ];
-            
-            // 预计算权重数组（只计算一次，提高抽奖性能）
-            const weightArray = [];
-            prizes.forEach(prize => {
-                for (let i = 0; i < prize.weight; i++) weightArray.push(prize);
-            });
-            
-            // DOM 元素
-            const blocksGrid = document.getElementById('blocksGrid');
-            const startBtn = document.getElementById('startBtn');
-            const gameStatus = document.getElementById('gameStatus');
-            const resultModal = document.getElementById('resultModal');
-            const resultTitle = document.getElementById('resultTitle');
-            const resultAmount = document.getElementById('resultAmount');
-            const resultMessage = document.getElementById('resultMessage');
-            const qrSection = document.getElementById('qrSection');
-            const qrImage = document.getElementById('qrImage');
-            const qrText = document.getElementById('qrText');
-            const confirmBtn = document.getElementById('confirmBtn');
-            const modalClose = document.getElementById('modalClose');
-            const balanceDisplay = document.getElementById('balanceDisplay');
-            const activityInfo = document.getElementById('activityInfo');
-            
-            // 次数显示 & 任务按钮
-            const drawTimesSpan = document.getElementById('drawTimesDisplay');
-            const taskBtn = document.getElementById('taskBtn');
-            
-            // ---------- 总金额设置（10亿元）----------
-            const INITIAL_BALANCE = 1000000000.00;
-            
-            // 游戏状态变量
-            let totalBalance = INITIAL_BALANCE;
-            let isSpinning = false;
-            let currentBlockIndex = 0;
-            let blocks = [];
-            let isActivityActive = false;
-            let currentPrize = null;                // 存储当前中奖奖项
-            
-            // 抽奖次数（localStorage持久化）
-            let drawTimes = 0;
-            const STORAGE_KEY = 'newYearDrawTimes';
-            // 每日签到标记 (存储上次签到日期)
-            const SIGN_DATE_KEY = 'lastSignDate';
-            
-            // 初始化或加载次数
-            function loadDrawTimes() {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored !== null) {
-                    drawTimes = parseInt(stored, 10) || 0;
-                } else {
-                    drawTimes = 3;  // 默认3次体验
-                    localStorage.setItem(STORAGE_KEY, drawTimes);
+        // 语音功能全局状态
+        let voiceEnabled = false;
+        let speechSynthesis = window.speechSynthesis;
+        
+        // 扩展的预设问答知识库
+        const knowledgeBase = [
+            {
+                keywords: ["你好", "hello", "hi", "您好", "嗨", "早上好", "下午好", "晚上好"],
+                response: "您好！我是智慧白板，很高兴为您服务。有什么可以帮您的吗？"
+            },
+            {
+                keywords: ["名字", "称呼", "你叫什么", "你是谁", "身份"],
+                response: "我是智慧白板，您的智能对话助手。我可以回答各种问题，提供信息和帮助，现在还支持上传文件哦。"
+            },
+            {
+                keywords: ["功能", "能做什么", "你会什么", "做什么", "能力", "擅长"],
+                response: "我可以回答关于时间、天气、日期、计算、常识等方面的问题。我还可以尝试生成图片，讲笑话，提供建议等。现在新增了文件上传和语音播报功能，您可以发送图片或文档给我，并可以听到我的语音回复。"
+            },
+            {
+                keywords: ["时间", "几点", "现在几点", "当前时间", "钟点", "日期", "今天几号", "星期几"],
+                response: function() {
+                    const now = new Date();
+                    const days = ["日", "一", "二", "三", "四", "五", "六"];
+                    const months = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+                    return `现在时间是 ${now.getHours()}点${now.getMinutes()}分${now.getSeconds()}秒。今天是${now.getFullYear()}年${months[now.getMonth()]}${now.getDate()}日，星期${days[now.getDay()]}。`;
                 }
-                updateTimesDisplay();
-            }
-            
-            // 更新显示并保存到localStorage
-            function updateTimesDisplay() {
-                drawTimesSpan.textContent = drawTimes;
-                localStorage.setItem(STORAGE_KEY, drawTimes);
-                updateStartButtonState();
-            }
-            
-            // 根据活动状态、抽奖次数、是否旋转 控制按钮
-            function updateStartButtonState() {
-                if (!isActivityActive) {
-                    startBtn.disabled = true;
-                    taskBtn.disabled = true;
-                } else if (isSpinning) {
-                    startBtn.disabled = true;
-                    taskBtn.disabled = true;
-                } else {
-                    startBtn.disabled = (drawTimes <= 0);
-                    taskBtn.disabled = false;
-                }
-            }
-            
-            // 任务按钮点击：每日签到，每天仅限一次
-            function handleTask() {
-                if (!isActivityActive) {
-                    alert('活动未开始或已结束，无法获取次数');
-                    return;
-                }
-                if (isSpinning) return;
-                
-                // 获取当前日期 (YYYY-MM-DD)
-                const today = new Date().toLocaleDateString('en-CA'); // 格式 '2026-02-16'
-                const lastSign = localStorage.getItem(SIGN_DATE_KEY);
-                
-                if (lastSign === today) {
-                    alert('今天已经签过到了，明天再来吧！');
-                    return;
-                }
-                
-                // 签到成功
-                drawTimes += 1;
-                updateTimesDisplay();
-                localStorage.setItem(SIGN_DATE_KEY, today);  // 记录签到日期
-                
-                gameStatus.textContent = '✅ 签到成功 +1次';
-                gameStatus.className = 'game-status ready';
-                setTimeout(() => { if (!isSpinning) gameStatus.textContent = '点击开始按钮抽奖'; }, 1500);
-            }
-            
-            // 格式化金额显示（带千位分隔符）
-            function formatBalance(amount) {
-                return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
-            
-            // 检查活动时间
-            function checkActivityTime() {
-                const now = new Date();
-                const activityStart = new Date(2026, 1, 16, 0, 0, 0);
-                const activityEnd = new Date(2026, 1, 24, 23, 59, 59);
-                
-                if (now >= activityStart && now <= activityEnd) {
-                    isActivityActive = true;
-                    activityInfo.textContent = "活动进行中！2026年2月16日-2月24日";
-                    activityInfo.style.background = "rgba(76, 175, 80, 0.2)";
-                    activityInfo.style.color = "#C8E6C9";
-                } else {
-                    isActivityActive = false;
-                    if (now < activityStart) {
-                        const daysLeft = Math.ceil((activityStart - now) / (1000 * 60 * 60 * 24));
-                        activityInfo.textContent = `活动将于2026年2月16日开始，还有${daysLeft}天`;
-                    } else {
-                        activityInfo.textContent = "活动已结束，感谢参与！";
-                    }
-                    activityInfo.style.background = "rgba(244, 67, 54, 0.2)";
-                    activityInfo.style.color = "#FFCDD2";
-                }
-                updateStartButtonState();
-            }
-            
-            // 初始化方块 (代金券显示特殊文案)
-            function initBlocks() {
-                blocksGrid.innerHTML = '';
-                blocks = [];
-                prizes.forEach((prize, index) => {
-                    const block = document.createElement('div');
-                    block.className = 'block';
-                    block.dataset.index = index;
-                    block.dataset.id = prize.id;
-                    block.style.backgroundColor = prize.color;
+            },
+            {
+                keywords: ["天气", "气象", "温度", "下雨", "晴天", "下雪", "气候", "天气预报"],
+                response: "目前无法获取实时天气数据。但根据我的知识，今天大部分地区天气晴朗，温度在15-25°C之间，适宜外出。"
+            },
+            {
+                keywords: ["计算", "算数", "数学", "加法", "减法", "乘法", "除法", "等于", "加", "减", "乘", "除"],
+                response: function(userInput) {
+                    const calculationKeywords = ["计算", "等于", "加", "减", "乘", "除", "+", "-", "*", "/"];
+                    const hasMath = calculationKeywords.some(keyword => userInput.includes(keyword));
                     
-                    // 代金券显示特殊value
-                    let valueHtml = '';
-                    if (prize.id === 5) {
-                        valueHtml = '15元代金券';
-                    } else if (prize.value > 0) {
-                        valueHtml = prize.value.toFixed(2) + '元';
-                    } else {
-                        valueHtml = '祝福';
-                    }
-                    
-                    block.innerHTML = `
-                        <div class="block-value">${valueHtml}</div>
-                        <div class="block-name">${prize.name}</div>
-                    `;
-                    blocksGrid.appendChild(block);
-                    blocks.push(block);
-                });
-                updateActiveBlock(0);
-            }
-            
-            function updateActiveBlock(index) {
-                blocks.forEach(block => block.classList.remove('active'));
-                if (blocks[index]) {
-                    blocks[index].classList.add('active');
-                    currentBlockIndex = index;
-                }
-            }
-            
-            // 开始抽奖 (消耗次数) - 使用预计算权重数组
-            function startLottery() {
-                if (!isActivityActive) { alert("当前不是活动时间，无法抽奖！"); return; }
-                if (isSpinning) return;
-                if (drawTimes <= 0) {
-                    alert('抽奖次数不足，请先做任务获取次数');
-                    return;
-                }
-                
-                drawTimes -= 1;
-                updateTimesDisplay();
-                
-                isSpinning = true;
-                startBtn.disabled = true;
-                taskBtn.disabled = true;
-                gameStatus.textContent = "抽奖进行中...";
-                gameStatus.className = "game-status waiting";
-                resultModal.style.display = 'none';
-                
-                // 直接从预计算权重数组随机选取
-                const randomIndex = Math.floor(Math.random() * weightArray.length);
-                const selectedPrize = weightArray[randomIndex];
-                const targetIndex = prizes.findIndex(p => p.id === selectedPrize.id);
-                
-                const baseMoves = 20;
-                const weightBonus = 65 - selectedPrize.weight;
-                const totalMoves = baseMoves + Math.max(0, weightBonus);
-                
-                let currentMove = 0;
-                const initialSpeed = 100;
-                let speedIncrease = 0;
-                
-                function moveAnimation() {
-                    let nextIndex = (currentBlockIndex + 1) % blocks.length;
-                    updateActiveBlock(nextIndex);
-                    currentMove++;
-                    speedIncrease++;
-                    const currentSpeed = Math.max(50, initialSpeed + speedIncrease * 10);
-                    if (currentMove < totalMoves) {
-                        setTimeout(moveAnimation, currentSpeed);
-                    } else {
-                        let finalPasses = 3;
-                        let passCount = 0;
-                        function finalAnimation() {
-                            let nextIndex = (currentBlockIndex + 1) % blocks.length;
-                            updateActiveBlock(nextIndex);
-                            passCount++;
-                            if (passCount < finalPasses * blocks.length) {
-                                setTimeout(finalAnimation, 50);
-                            } else {
-                                updateActiveBlock(targetIndex);
-                                setTimeout(() => { finishLottery(targetIndex); }, 500);
+                    if (hasMath) {
+                        try {
+                            const expression = userInput.replace(/[^0-9+\-*/.()]/g, '');
+                            if (expression) {
+                                const result = eval(expression);
+                                return `计算结果：${expression} = ${result}`;
                             }
+                        } catch (e) {
                         }
-                        setTimeout(finalAnimation, 50);
                     }
+                    return "我可以进行简单的数学计算。请告诉我您要计算什么，例如：计算5+3*2 或者 12除以4等于多少？"
                 }
-                moveAnimation();
+            },
+            {
+                keywords: ["笑话", "讲笑话", "搞笑", "幽默", "段子"],
+                response: "为什么程序员总是分不清万圣节和圣诞节？因为 Oct 31 等于 Dec 25！(八进制31等于十进制25)\n\n另一个笑话：为什么数学家不喜欢海滩？因为他们会被sin和cos困扰！"
+            },
+            {
+                keywords: ["春节", "过年", "新年", "除夕", "元宵", "节日", "传统节日"],
+                response: "春节是中国最重要的传统节日。2026年的春节是2月17日（丙午年正月初一），除夕是2月16日（乙巳年腊月廿九，这一年没有大年三十），元宵节是3月3日。祝您马年大吉，万事如意！"
+            },
+            {
+                keywords: ["马年", "丙午", "属马", "生肖", "十二生肖"],
+                response: "今年是2026年，农历丙午马年。马象征着活力、成功、积极进取和自由精神。马年出生的人通常性格开朗、思维敏捷、善于交际。"
+            },
+            {
+                keywords: ["图片", "图像", "生成图片", "画图", "绘画", "照片", "生成图像", "画一张", "创建图片"],
+                response: "image_generation"
+            },
+            {
+                keywords: ["文件", "上传", "附件", "发送文件", "图片上传", "文档"],
+                response: "我已经支持文件上传功能了！您可以点击输入框右侧的+按钮，选择图片（如JPG, PNG）或文档（如PDF, DOC, TXT）进行上传。上传后，我可以在聊天中提示已收到文件。"
+            },
+            {
+                keywords: ["语音", "声音", "播报", "朗读", "说话", "语音功能"],
+                response: "我已经支持语音播报功能了！点击右上角的语音开关，可以开启或关闭我的语音回复。开启后，我会用语音读出我的回答，方便您在忙碌时收听。"
+            },
+            {
+                keywords: ["帮助", "使用说明", "怎么用", "帮助文档"],
+                response: "使用说明：\n1. 直接在输入框输入问题\n2. 点击预设问题快速提问\n3. 点击右侧+按钮上传图片或文件\n4. 点击右上角喇叭图标开启/关闭语音\n5. 我可以回答时间、天气、计算等问题\n6. 尝试让我生成图片"
+            },
+            {
+                keywords: ["颜色", "色彩", "RGB", "HEX", "颜色代码"],
+                response: "我可以提供颜色信息：\n- 红色: #FF0000\n- 蓝色: #0000FF\n- 绿色: #00FF00\n- 黄色: #FFFF00\n- 橙色: #FFA500\n- 紫色: #800080\n- 粉色: #FFC0CB\n- 棕色: #A52A2A"
+            },
+            {
+                keywords: ["编程", "代码", "语言", "Python", "JavaScript", "Java", "C++", "HTML", "CSS"],
+                response: "我可以提供编程相关帮助：\n- Python: 适合数据分析、人工智能\n- JavaScript: 网页开发主要语言\n- Java: 企业级应用开发\n- HTML/CSS: 网页结构和样式\n- 有具体问题可以问我！"
+            },
+            {
+                keywords: ["音乐", "歌曲", "歌手", "听歌", "演唱会", "音乐推荐"],
+                response: "音乐推荐：\n1. 古典音乐: 贝多芬第九交响曲\n2. 流行音乐: 周杰伦《七里香》\n3. 摇滚音乐: Queen《Bohemian Rhapsody》\n4. 爵士音乐: Louis Armstrong《What a Wonderful World》\n您喜欢什么类型的音乐？"
+            },
+            {
+                keywords: ["电影", "电视剧", "娱乐", "视频", "追剧", "影视推荐"],
+                response: "影视推荐：\n- 科幻电影:《星际穿越》\n- 喜剧电影:《三傻大闹宝莱坞》\n- 动画电影:《寻梦环游记》\n- 悬疑剧:《神探夏洛克》\n- 历史剧:《权力的游戏》\n您想看什么类型的影视作品？"
+            },
+            {
+                keywords: ["食物", "美食", "吃什么", "餐厅", "饭店", "菜谱", "烹饪"],
+                response: "美食推荐：\n- 中餐: 宫保鸡丁、麻婆豆腐、北京烤鸭\n- 西餐: 意大利面、牛排、披萨\n- 日料: 寿司、拉面、天妇罗\n- 甜点: 提拉米苏、巧克力蛋糕\n您对哪种菜系感兴趣？"
+            },
+            {
+                keywords: ["健康", "医疗", "医生", "医院", "养生", "锻炼", "健身"],
+                response: "健康建议：\n1. 每天保持7-8小时睡眠\n2. 均衡饮食，多吃蔬菜水果\n3. 每周至少150分钟中等强度运动\n4. 保持良好心态，减轻压力\n5. 定期体检，早发现早治疗"
+            },
+            {
+                keywords: ["旅游", "旅行", "景点", "度假", "假期", "旅游推荐"],
+                response: "旅游目的地推荐：\n- 自然风光: 九寨沟、张家界、黄山\n- 历史文化: 北京故宫、西安兵马俑、敦煌莫高窟\n- 现代都市: 上海外滩、香港维多利亚港、深圳湾区\n- 海滨度假: 三亚、青岛、厦门鼓浪屿"
+            },
+            {
+                keywords: ["学习", "教育", "学校", "课程", "知识", "学习方法"],
+                response: "学习建议：\n1. 制定明确的学习计划\n2. 使用番茄工作法提高效率\n3. 主动回顾和复习\n4. 理论与实践相结合\n5. 加入学习小组互相促进\n您在学习什么科目？"
+            },
+            {
+                keywords: ["工作", "职业", "事业", "上班", "办公室", "职场"],
+                response: "职场建议：\n1. 设定明确的职业目标\n2. 持续学习新技能\n3. 建立良好的人际关系\n4. 保持工作与生活平衡\n5. 定期评估职业发展路径"
+            },
+            {
+                keywords: ["科技", "技术", "互联网", "人工智能", "AI", "机器学习", "大数据"],
+                response: "科技趋势：\n1. 人工智能和机器学习\n2. 5G和物联网\n3. 云计算和边缘计算\n4. 区块链技术\n5. 元宇宙和虚拟现实\n6. 新能源和可持续发展技术"
+            },
+            {
+                keywords: ["感谢", "谢谢", "多谢", "thx", "thanks", "感恩"],
+                response: "不客气！很高兴能帮助您。如果还有其他问题，请随时问我！"
+            },
+            {
+                keywords: ["再见", "拜拜", "退出", "结束", "bye", "goodbye", "下次聊"],
+                response: "再见！感谢使用智慧白板，祝您有美好的一天！期待下次为您服务。"
+            },
+            {
+                keywords: ["默认", "不知道", "不了解", "不清楚", "不明白"],
+                response: "服务器繁忙，请稍后重试。"
+            }
+        ];
+
+        // 语音播报功能
+        function speakText(text) {
+            if (!voiceEnabled || !speechSynthesis) return;
+            
+            // 停止当前可能正在进行的语音
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            speechSynthesis.speak(utterance);
+        }
+        
+        // 切换语音开关
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const toggleBtn = document.getElementById('voiceToggle');
+            const voiceIcon = toggleBtn.querySelector('.voice-icon');
+            const voiceText = toggleBtn.querySelector('.voice-text');
+            
+            if (voiceEnabled) {
+                toggleBtn.classList.add('active');
+                voiceIcon.textContent = '🔊';
+                voiceText.textContent = '';
+                // 测试语音
+                speakText("语音播报功能已开启");
+            } else {
+                toggleBtn.classList.remove('active');
+                voiceIcon.textContent = '🔇';
+                voiceText.textContent = '';
+                speechSynthesis.cancel();
+            }
+        }
+
+        // 过滤语气词，提取关键词
+        function extractKeywords(text) {
+            const filteredText = text.toLowerCase()
+                .replace(/[啊呀呢吧嘛哦啦咦哎哟呵嗯呐噢唉哈啰呗哩咯哟]/g, '')
+                .replace(/[,.!?;，。！？；]/g, '')
+                .trim();
+            
+            const words = filteredText.split(/\s+/);
+            
+            const stopWords = ["的", "了", "在", "是", "我", "有", "和", "就", "不", "人", "都", "一", "个", "上", "也", "很", "到", "说", "要", "去", "你", "会", "着", "没有", "看", "好", "自己", "这", "那", "就", "还", "把", "又", "什么", "怎么", "如何", "为什么"];
+            
+            return words.filter(word => 
+                word.length > 0 && 
+                !stopWords.includes(word) &&
+                word.length <= 8
+            );
+        }
+
+        // 在知识库中查找匹配的回答
+        function findResponse(userInput) {
+            const keywords = extractKeywords(userInput);
+            
+            if (keywords.length === 0) {
+                return "抱歉，我没有理解您的问题。您可以尝试更清楚地表达您的问题。";
             }
             
-            // 抽奖结束处理
-            function finishLottery(prizeIndex) {
-                const prize = prizes[prizeIndex];
-                currentPrize = prize;
+            let bestMatch = null;
+            let highestScore = 0;
+            
+            for (const item of knowledgeBase) {
+                let score = 0;
                 
-                // 扣除奖金：只有现金红包(isCash=true)才扣
-                if (prize.isCash) {
-                    totalBalance -= prize.value;
-                    if (totalBalance < 0) totalBalance = 0;
-                }
-                balanceDisplay.textContent = formatBalance(totalBalance);
-                
-                // 显示结果
-                showResult(prize);
-                
-                isSpinning = false;
-                updateStartButtonState();  // 可能次数为0禁用开始
-                
-                // ===== 再来一抽概率触发 (15%概率) =====
-                if (isActivityActive && !isSpinning) {
-                    const extraChance = Math.random() < 0.15; // 15% 触发
-                    if (extraChance) {
-                        drawTimes += 1;
-                        updateTimesDisplay();
-                        confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
-                        confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.2 }, colors: ['#ffd700', '#ff9800'] });
-                        confetti({ particleCount: 80, spread: 80, origin: { y: 0.5, x: 0.8 }, colors: ['#4caf50', '#2196f3'] });
-                        gameStatus.textContent = '✨ 恭喜获得“再来一抽”！次数+1 ✨';
-                        gameStatus.className = 'game-status extra';
-                        setTimeout(() => {
-                            if (!isSpinning) gameStatus.textContent = '点击开始按钮抽奖';
-                            gameStatus.className = 'game-status ready';
-                        }, 3000);
+                for (const keyword of keywords) {
+                    for (const pattern of item.keywords) {
+                        if (keyword.includes(pattern) || pattern.includes(keyword)) {
+                            score += 3;
+                        } else if (keyword.toLowerCase().includes(pattern.toLowerCase()) || 
+                                  pattern.toLowerCase().includes(keyword.toLowerCase())) {
+                            score += 1;
+                        }
                     }
+                }
+                
+                if (score > highestScore) {
+                    highestScore = score;
+                    bestMatch = item;
                 }
             }
             
-            function showResult(prize) {
-                resultTitle.textContent = prize.hasPrize ? "恭喜您获得奖励！" : "新年祝福！";
-                if (prize.id === 5) {
-                    resultAmount.textContent = "15元代金券";
-                } else if (prize.value > 0) {
-                    resultAmount.textContent = prize.value.toFixed(2) + " 元";
+            if (highestScore > 2) {
+                if (bestMatch.response === "image_generation") {
+                    return "image_generation";
+                } else if (typeof bestMatch.response === 'function') {
+                    return bestMatch.response(userInput);
+                }
+                return bestMatch.response;
+            } else {
+                const random = Math.random();
+                if (random < 0.6) {
+                    return "抱歉，我还在学习中，暂时无法回答这个问题。您可以尝试问其他问题，比如时间、天气或功能说明。";
                 } else {
-                    resultAmount.textContent = "福气满满";
+                    return "服务器繁忙，请稍后重试。";
                 }
-                resultMessage.textContent = prize.message;
+            }
+        }
+
+        // 处理图片生成相关请求
+        function handleImageGeneration() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const responses = [
+                        "正在生成图片中，请稍候...",
+                        "图片生成遇到问题，服务器错误，请重新尝试。",
+                        "图片生成服务暂时不可用，请稍后再试。"
+                    ];
+                    const randomIndex = Math.floor(Math.random() * responses.length);
+                    resolve(responses[randomIndex]);
+                }, 1500 + Math.random() * 2000);
+            });
+        }
+
+        // 添加消息到聊天界面
+        function addMessage(message, isUser = false, isSystem = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            
+            if (isSystem) {
+                messageDiv.className = isSystem === 'image' ? 'image-generation' : 'error-message';
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                messageDiv.textContent = message;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // 如果是AI的回复且不是系统消息，且语音功能开启，则播报
+            if (!isUser && !isSystem && voiceEnabled) {
+                speakText(message);
+            }
+            
+            return messageDiv;
+        }
+        
+        // 模拟AI思考过程
+        async function simulateAIResponse(userInput, fileInfo = null) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            typingIndicator.style.display = 'block';
+            document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+            
+            // 检查是否是图片生成请求
+            const keywords = extractKeywords(userInput);
+            const isImageRequest = keywords.some(word => 
+                ["图片", "图像", "生成", "画图", "绘画", "照片", "创建"].includes(word)
+            );
+            
+            setTimeout(async () => {
+                typingIndicator.style.display = 'none';
                 
-                if (prize.hasPrize) {
-                    qrSection.style.display = 'inline-block';
-                    if (prize.id === 5) {
-                        qrText.textContent = "扫码领取代金券";
+                // 如果有文件上传，先提示文件信息
+                if (fileInfo) {
+                    addMessage(`[已上传文件: ${fileInfo.name} (${(fileInfo.size/1024).toFixed(2)} KB)]`, true);
+                    addMessage(`收到您上传的文件: "${fileInfo.name}"。当前版本我主要处理文本对话，文件已成功接收。`, false);
+                }
+                
+                if (userInput.trim() !== '') {
+                    if (isImageRequest && Math.random() > 0.3) {
+                        const msg = addMessage("正在为您生成图片，请稍候...", false, 'image');
+                        
+                        setTimeout(async () => {
+                            const imageResponse = await handleImageGeneration();
+                            const responseMsg = addMessage(imageResponse, false, imageResponse.includes("错误") || imageResponse.includes("不可用") ? 'error' : 'image');
+                        }, 2000);
                     } else {
-                        qrText.textContent = "扫码领取红包";
+                        const response = findResponse(userInput);
+                        
+                        if (response === "image_generation") {
+                            const msg = addMessage("正在为您生成图片，请稍候...", false, 'image');
+                            
+                            setTimeout(async () => {
+                                const imageResponse = await handleImageGeneration();
+                                const responseMsg = addMessage(imageResponse, false, imageResponse.includes("错误") || imageResponse.includes("不可用") ? 'error' : 'image');
+                            }, 2000);
+                        } else {
+                            addMessage(response, false);
+                        }
                     }
-                    qrImage.innerHTML = '<img src="https://longsstudio.github.io/-123panal.png" alt="收款二维码" loading="lazy" onerror="this.src=\'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=新年快乐\'">';
-                } else {
-                    qrSection.style.display = 'none';
                 }
-                resultModal.style.display = 'flex';
-            }
+            }, 800 + Math.random() * 800);
+        }
+        
+        // 文件上传处理
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             
-            // 确认按钮：只有现金红包才跳转微信
-            function handleConfirm() {
-                resultModal.style.display = 'none';
-                if (currentPrize && currentPrize.isCash) {
-                    window.location.href = 'weixin://';
-                }
-            }
+            const fileInfoDiv = document.getElementById('fileInfo');
+            const fileNameSpan = document.getElementById('fileName');
+            const removeFileBtn = document.getElementById('removeFile');
+            const sendButton = document.getElementById('sendButton');
+            const userInput = document.getElementById('userInput');
             
-            // 初始化游戏
-            function initGame() {
-                checkActivityTime();
-                initBlocks();
-                loadDrawTimes();
-                balanceDisplay.textContent = formatBalance(totalBalance);
+            // 显示文件信息
+            fileNameSpan.textContent = `${file.name} (${(file.size/1024).toFixed(2)}KB)`;
+            fileInfoDiv.style.display = 'block';
+            
+            // 存储文件信息
+            window.currentUploadedFile = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                file: file
+            };
+            
+            // 清空文件输入框，以便可以重复选择同一文件
+            event.target.value = '';
+            
+            // 修改发送按钮的点击事件，使其包含文件
+            const originalSendHandler = sendButton.onclick;
+            
+            sendButton.onclick = function() {
+                const input = userInput.value.trim();
                 
-                taskBtn.addEventListener('click', handleTask);
-                startBtn.addEventListener('click', startLottery);
-                confirmBtn.addEventListener('click', handleConfirm);
-                modalClose.addEventListener('click', function() { resultModal.style.display = 'none'; });
-                resultModal.addEventListener('click', function(e) { if (e.target === resultModal) resultModal.style.display = 'none'; });
-            }
-            
-            initGame();
-            
-            // ================== 发现功能（复制降级方案优化，使用隐藏复用textarea）==================
-            const discoverTrigger = document.getElementById('discoverTrigger');
-            const discoverModal = document.getElementById('discoverModal');
-            const discoverModalClose = document.getElementById('discoverModalClose');
-            const discoverConfirmBtn = document.getElementById('discoverConfirmBtn');
-            const copyQrBtn = document.getElementById('copyQrBtn');
-            const copyUrlBtn = document.getElementById('copyUrlBtn');
-            const discoverPageUrl = document.getElementById('discoverPageUrl');
-            
-            const QR_IMAGE_URL = 'https://longsstudio.github.io/newyearhq.png';
-            
-            function openDiscoverModal() {
-                discoverPageUrl.value = window.location.href;
-                discoverModal.style.display = 'flex';
-            }
-            
-            function closeDiscoverModal() {
-                discoverModal.style.display = 'none';
-            }
-            
-            // 复用隐藏的textarea进行降级复制
-            const hiddenTextarea = document.getElementById('hiddenCopyTextarea');
-            
-            function copyTextWithFallback(text, successCallback) {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(successCallback).catch(() => {
-                        fallbackCopy(text, successCallback);
-                    });
-                } else {
-                    fallbackCopy(text, successCallback);
+                if (input === '' && !window.currentUploadedFile) {
+                    if (voiceEnabled) speakText("请输入消息或上传文件");
+                    return;
                 }
-            }
-            
-            function fallbackCopy(text, successCallback) {
-                hiddenTextarea.value = text;
-                hiddenTextarea.style.display = 'block'; // 确保可以选中
-                hiddenTextarea.select();
-                try {
-                    const successful = document.execCommand('copy');
-                    if (successful) {
-                        successCallback();
-                    } else {
-                        alert('复制失败，请手动复制文案：\n' + text);
-                    }
-                } catch (err) {
-                    alert('复制失败，请手动复制文案：\n' + text);
+                
+                if (input !== '') {
+                    addMessage(input, true);
                 }
-                hiddenTextarea.style.display = 'none';
-            }
+                
+                simulateAIResponse(input, window.currentUploadedFile);
+                
+                // 重置
+                userInput.value = '';
+                fileInfoDiv.style.display = 'none';
+                delete window.currentUploadedFile;
+                
+                // 恢复原发送处理函数
+                sendButton.onclick = originalSendHandler;
+            };
             
-            copyQrBtn.addEventListener('click', () => {
-                copyTextWithFallback(QR_IMAGE_URL, () => alert('二维码地址已复制！'));
+            // 文件输入框也触发回车发送
+            userInput.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
+            };
+        }
+        
+        // 移除已选文件
+        function removeSelectedFile() {
+            const fileInfoDiv = document.getElementById('fileInfo');
+            const fileInput = document.getElementById('fileUpload');
+            
+            fileInfoDiv.style.display = 'none';
+            delete window.currentUploadedFile;
+            fileInput.value = '';
+            
+            // 恢复原发送处理函数
+            const sendButton = document.getElementById('sendButton');
+            const userInput = document.getElementById('userInput');
+            
+            sendButton.onclick = function() {
+                const input = userInput.value.trim();
+                if (input === '') {
+                    if (voiceEnabled) speakText("请输入消息");
+                    return;
+                }
+                
+                addMessage(input, true);
+                userInput.value = '';
+                simulateAIResponse(input);
+            };
+        }
+        
+        // 初始化事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            const sendButton = document.getElementById('sendButton');
+            const userInput = document.getElementById('userInput');
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            const fileUpload = document.getElementById('fileUpload');
+            const removeFileBtn = document.getElementById('removeFile');
+            const voiceToggle = document.getElementById('voiceToggle');
+            
+            // 初始化语音开关
+            voiceToggle.addEventListener('click', toggleVoice);
+            
+            // 文件上传事件
+            fileUpload.addEventListener('change', handleFileUpload);
+            removeFileBtn.addEventListener('click', removeSelectedFile);
+            
+            // 原始发送消息函数
+            const originalSendFunction = function() {
+                const input = userInput.value.trim();
+                if (input === '') {
+                    if (voiceEnabled) speakText("请输入消息");
+                    return;
+                }
+                
+                addMessage(input, true);
+                userInput.value = '';
+                simulateAIResponse(input);
+            };
+            
+            sendButton.addEventListener('click', originalSendFunction);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendButton.click();
+                }
             });
             
-            copyUrlBtn.addEventListener('click', function() {
-                const shareText = '快快快，去智慧白板安卓版抽红包https://longsstudio.github.io/newyearhd.html';
-                copyTextWithFallback(shareText, () => {
-                    alert('分享文案已复制！即将跳转微信，请粘贴发送给好友');
-                    window.location.href = 'weixin://';
+            presetButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    userInput.value = question;
+                    sendButton.click();
                 });
             });
             
-            discoverTrigger.addEventListener('click', (e) => { e.stopPropagation(); openDiscoverModal(); });
-            discoverModalClose.addEventListener('click', closeDiscoverModal);
-            discoverConfirmBtn.addEventListener('click', closeDiscoverModal);
-            discoverModal.addEventListener('click', (e) => { if (e.target === discoverModal) closeDiscoverModal(); });
+            // 页面加载后自动发送欢迎消息
+            setTimeout(() => {
+                simulateAIResponse("你好");
+            }, 500);
         });
     </script>
 </body>
 </html>
+
