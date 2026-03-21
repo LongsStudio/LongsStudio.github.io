@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智慧白板 - Longs Studio | 打造极致教学工具</title>
+    <!-- 添加标签页图标 -->
+    <link rel="icon" href="https://longsstudio.github.io/智慧白板图标.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,9 +16,9 @@
         }
         
         :root {
-            --primary-color: #3a86ff;
-            --secondary-color: #8338ec;
-            --accent-color: #ff006e;
+            --primary-color: #00c853;       /* 科技亮绿色 */
+            --secondary-color: #00796b;     /* 深青绿色 */
+            --accent-color: #64dd17;        /* 荧光绿 */
             --light-color: #f8f9fa;
             --dark-color: #212529;
             --gray-color: #6c757d;
@@ -27,8 +29,8 @@
             color: var(--dark-color);
             line-height: 1.6;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(58, 134, 255, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(131, 56, 236, 0.05) 0%, transparent 20%);
+                radial-gradient(circle at 10% 20%, rgba(0, 200, 83, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 121, 107, 0.05) 0%, transparent 20%);
             min-height: 100vh;
         }
         
@@ -60,12 +62,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
         }
         
-        .logo-icon i {
-            font-size: 24px;
-            color: white;
+        .logo-icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
         }
         
         .logo-text h1 {
@@ -84,7 +87,7 @@
         }
         
         .announcement-btn {
-            background: linear-gradient(135deg, var(--accent-color), #ff5c8d);
+            background: linear-gradient(135deg, var(--accent-color), #9cff57);
             color: white;
             padding: 12px 25px;
             border-radius: 50px;
@@ -94,12 +97,12 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.2);
+            box-shadow: 0 5px 15px rgba(100, 221, 23, 0.2);
         }
         
         .announcement-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+            box-shadow: 0 8px 20px rgba(100, 221, 23, 0.3);
         }
         
         .hero-section {
@@ -298,7 +301,7 @@
             font-weight: 600;
             font-size: 18px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
             width: 100%;
             max-width: 250px;
             margin-top: 10px;
@@ -306,7 +309,7 @@
         
         .download-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(58, 134, 255, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
         }
         
         .features-section {
@@ -446,7 +449,7 @@
         <header>
             <div class="logo">
                 <div class="logo-icon">
-                    <i class="fas fa-chalkboard"></i>
+                    <img src="https://longsstudio.github.io/智慧白板图标.png" alt="智慧白板图标">
                 </div>
                 <div class="logo-text">
                     <h1>智慧白板</h1>
@@ -551,7 +554,7 @@
                         <i class="fas fa-users-cog"></i>
                     </div>
                     <h4>实时协作</h4>
-                    <p>多人同时编辑，实时同步内容变化，支持语音和视频通话集成。</p>
+                    <p>(即将推出)多人同时编辑，实时同步内容变化，支持语音和视频通话集成。</p>
                 </div>
                 
                 <div class="feature-card animate-in delay-2">
@@ -567,7 +570,7 @@
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
                     <h4>云端同步</h4>
-                    <p>自动保存到云端，跨设备访问您的工作内容，永不丢失重要创意。</p>
+                    <p>(即将推出)自动保存到云端，跨设备访问您的工作内容，永不丢失重要创意。</p>
                 </div>
                 
                 <div class="feature-card animate-in delay-1">
@@ -591,7 +594,7 @@
         <footer class="animate-in delay-2">
             <div class="logo">
                 <div class="logo-icon" style="width: 40px; height: 40px;">
-                    <i class="fas fa-chalkboard"></i>
+                    <img src="https://longsstudio.github.io/智慧白板图标.png" alt="智慧白板图标" style="width: 20px; height: 20px;">
                 </div>
                 <div class="logo-text">
                     <h1 style="font-size: 24px;">智慧白板</h1>
@@ -599,8 +602,8 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>© 2023 Longs Studio. 智慧白板是Longs Studio的注册商标。保留所有权利。</p>
-                <p style="margin-top: 5px;">联系我们: contact@longsstudio.com | 反馈建议: feedback@longsstudio.com</p>
+                <p>© 2026 LongsStudio.lao6 OS 开发团队·保留所有权利·</p>
+                <p style="margin-top: 5px;">联系我们: longxinyu2024@outlook.com | 反馈建议: longxinyu2024@outlook.com</p>
             </div>
         </footer>
     </div>
