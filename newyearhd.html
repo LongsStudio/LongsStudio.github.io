@@ -50,7 +50,7 @@
         }
         
         .btn-primary {
-            background-color: #4a6fa5;
+            background-color: #2ecc71; /* 绿色主题 */
             color: white;
         }
         
@@ -59,9 +59,9 @@
             color: #333;
         }
         
-        /* 顶部导航栏 */
+        /* 顶部导航栏 - 绿色主题 */
         .header {
-            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); /* 绿色渐变 */
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -70,7 +70,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
         }
         
         .header-title {
@@ -99,7 +99,7 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* 科目标签栏 */
+        /* 科目标签栏 - 绿色主题 */
         .subject-tabs {
             display: flex;
             background-color: white;
@@ -126,7 +126,7 @@
         }
         
         .subject-tab.active {
-            background-color: #4a6fa5;
+            background-color: #2ecc71; /* 绿色主题 */
             color: white;
         }
         
@@ -174,7 +174,7 @@
         }
         
         .question-card.mastered {
-            border-left: 5px solid #2ecc71;
+            border-left: 5px solid #2ecc71; /* 绿色主题 */
         }
         
         .question-card.not-mastered {
@@ -280,7 +280,7 @@
             color: #c0392b;
         }
         
-        /* 添加按钮 */
+        /* 添加按钮 - 绿色主题 */
         .add-btn {
             position: fixed;
             bottom: 25px;
@@ -289,14 +289,14 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); /* 绿色渐变 */
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.5);
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
             border: none;
             z-index: 100;
             transition: all 0.3s;
@@ -304,7 +304,7 @@
         
         .add-btn:hover {
             transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.6);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.6);
         }
         
         /* 添加错题界面 */
@@ -378,7 +378,7 @@
         }
         
         .camera-btn.primary {
-            background-color: #4a6fa5;
+            background-color: #2ecc71; /* 绿色主题 */
             color: white;
         }
         
@@ -467,7 +467,7 @@
         
         .form-control:focus {
             outline: none;
-            border-color: #4a6fa5;
+            border-color: #2ecc71; /* 绿色主题 */
         }
         
         .detail-content {
@@ -541,7 +541,7 @@
         }
         
         input:checked + .toggle-slider {
-            background-color: #2ecc71;
+            background-color: #2ecc71; /* 绿色主题 */
         }
         
         input:checked + .toggle-slider:before {
@@ -567,7 +567,7 @@
         }
         
         .action-btn.save {
-            background-color: #2ecc71;
+            background-color: #2ecc71; /* 绿色主题 */
             color: white;
         }
         
@@ -586,7 +586,7 @@
             transform: translateY(-2px);
         }
         
-        /* 科目颜色 */
+        /* 科目颜色 - 调整为绿色主题相关 */
         .chinese { background-color: rgba(241, 196, 15, 0.1); color: #f39c12; }
         .math { background-color: rgba(231, 76, 60, 0.1); color: #c0392b; }
         .english { background-color: rgba(230, 126, 34, 0.1); color: #d35400; }
@@ -816,6 +816,136 @@
                 opacity: 0.8;
             }
         }
+        
+        /* 全屏拍照界面 */
+        .fullscreen-camera {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .fullscreen-camera.active {
+            display: flex;
+        }
+        
+        .fullscreen-camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .fullscreen-camera-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .fullscreen-camera-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .fullscreen-capture-btn {
+            background-color: #fff;
+            color: #333;
+            width: 70px;
+            height: 70px;
+        }
+        
+        .fullscreen-close-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .fullscreen-switch-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .fullscreen-camera-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .fullscreen-camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        
+        .fullscreen-camera-grid {
+            width: 80%;
+            height: 80%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .fullscreen-camera-grid:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%);
+        }
+        
+        .fullscreen-camera-grid:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%);
+        }
+        
+        .fullscreen-camera-count {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -867,17 +997,14 @@
                 <div class="camera-preview" id="camera-preview">
                     <div id="camera-placeholder">
                         <i class="fas fa-camera" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
-                        <p id="camera-status-text">正在启动摄像头...</p>
+                        <p id="camera-status-text">点击下方按钮开始拍照</p>
                     </div>
                     <video id="camera-stream" style="display:none;" autoplay playsinline></video>
                     <canvas id="camera-canvas" style="display:none;"></canvas>
                 </div>
                 <div class="camera-controls">
-                    <button class="camera-btn secondary" id="retake-btn" style="display: none;">
-                        <i class="fas fa-redo"></i> 重拍
-                    </button>
-                    <button class="camera-btn primary" id="capture-btn">
-                        <i class="fas fa-camera-retro"></i> 拍照
+                    <button class="camera-btn primary" id="fullscreen-camera-btn">
+                        <i class="fas fa-expand"></i> 全屏拍照
                     </button>
                     <button class="camera-btn secondary" id="upload-btn">
                         <i class="fas fa-upload"></i> 上传多图
@@ -900,11 +1027,7 @@
                         <option value="english">英语</option>
                         <option value="history">历史</option>
                         <option value="geography">地理</option>
-                        <option value="biology">生物</option>
-                        <option value="politics">政治</option>
-                        <option value="physics">物理</option>
-                        <option value="chemistry">化学</option>
-                        <option value="other">其他</option>
+                        <option value="biology">生物</div>
                     </select>
                 </div>
                 
@@ -1018,6 +1141,31 @@
         
         <div class="image-viewer-info">
             <div id="image-viewer-index">1 / 1</div>
+        </div>
+    </div>
+    
+    <!-- 全屏拍照界面 -->
+    <div id="fullscreen-camera" class="fullscreen-camera">
+        <video id="fullscreen-camera-stream" class="fullscreen-camera-video" autoplay playsinline></video>
+        <canvas id="fullscreen-camera-canvas" style="display:none;"></canvas>
+        
+        <div class="fullscreen-camera-overlay">
+            <div class="fullscreen-camera-grid"></div>
+        </div>
+        
+        <div class="fullscreen-camera-count" id="fullscreen-camera-count">已拍0张</div>
+        
+        <button class="fullscreen-camera-btn fullscreen-close-btn" id="fullscreen-close-btn">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="fullscreen-camera-controls">
+            <button class="fullscreen-camera-btn fullscreen-switch-btn" id="fullscreen-switch-btn">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="fullscreen-camera-btn fullscreen-capture-btn" id="fullscreen-capture-btn">
+                <i class="fas fa-camera"></i>
+            </button>
         </div>
     </div>
 
@@ -1266,6 +1414,195 @@
             }
         }
         
+        // 全屏拍照管理器
+        class FullscreenCamera {
+            constructor() {
+                this.camera = document.getElementById('fullscreen-camera');
+                this.video = document.getElementById('fullscreen-camera-stream');
+                this.canvas = document.getElementById('fullscreen-camera-canvas');
+                this.closeBtn = document.getElementById('fullscreen-close-btn');
+                this.captureBtn = document.getElementById('fullscreen-capture-btn');
+                this.switchBtn = document.getElementById('fullscreen-switch-btn');
+                this.countDisplay = document.getElementById('fullscreen-camera-count');
+                
+                this.capturedImages = [];
+                this.currentStream = null;
+                this.facingMode = 'environment'; // 默认后置摄像头
+                
+                this.init();
+            }
+            
+            init() {
+                // 关闭按钮
+                this.closeBtn.addEventListener('click', () => {
+                    this.hide();
+                });
+                
+                // 拍照按钮
+                this.captureBtn.addEventListener('click', () => {
+                    this.capture();
+                });
+                
+                // 切换摄像头按钮
+                this.switchBtn.addEventListener('click', () => {
+                    this.switchCamera();
+                });
+            }
+            
+            show() {
+                this.camera.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                this.startCamera();
+            }
+            
+            hide() {
+                this.stopCamera();
+                this.camera.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            startCamera() {
+                // 检查浏览器是否支持媒体设备
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('您的浏览器不支持摄像头功能，请使用上传图片功能');
+                    this.hide();
+                    return;
+                }
+                
+                // 获取摄像头权限
+                const constraints = {
+                    video: { 
+                        facingMode: this.facingMode,
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
+                };
+                
+                navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    this.currentStream = stream;
+                    this.video.srcObject = stream;
+                    
+                    // 播放视频流
+                    this.video.play().catch(err => {
+                        console.error('播放视频流失败:', err);
+                        alert('播放视频流失败，请检查摄像头权限');
+                        this.hide();
+                    });
+                })
+                .catch(err => {
+                    console.error("摄像头访问错误: ", err);
+                    alert("无法访问摄像头，请检查权限设置或尝试使用上传图片功能。");
+                    this.hide();
+                });
+            }
+            
+            stopCamera() {
+                if (this.currentStream) {
+                    this.currentStream.getTracks().forEach(track => {
+                        track.stop();
+                    });
+                    this.currentStream = null;
+                }
+            }
+            
+            capture() {
+                if (!this.video.srcObject) {
+                    alert('摄像头未启动');
+                    return;
+                }
+                
+                const context = this.canvas.getContext('2d');
+                
+                // 设置canvas尺寸与视频流一致
+                this.canvas.width = this.video.videoWidth;
+                this.canvas.height = this.video.videoHeight;
+                
+                // 绘制当前视频帧到canvas
+                context.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                
+                // 将canvas内容转换为图片
+                const imageData = this.canvas.toDataURL('image/jpeg', 0.9);
+                
+                // 将图片添加到数组中
+                this.capturedImages.push(imageData);
+                
+                // 更新计数显示
+                this.updateCount();
+                
+                // 显示拍照成功提示
+                this.showCaptureFeedback();
+                
+                // 自动返回添加界面
+                setTimeout(() => {
+                    this.hide();
+                    // 将拍摄的图片传递给主应用
+                    if (window.viewManager) {
+                        window.viewManager.addCapturedImages(this.capturedImages);
+                    }
+                }, 1000);
+            }
+            
+            updateCount() {
+                this.countDisplay.textContent = `已拍${this.capturedImages.length}张`;
+            }
+            
+            showCaptureFeedback() {
+                // 显示拍照成功动画
+                const overlay = document.createElement('div');
+                overlay.style.position = 'absolute';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'white';
+                overlay.style.opacity = '0.8';
+                overlay.style.zIndex = '5';
+                overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
+                overlay.style.fontSize = '2rem';
+                overlay.style.color = '#2ecc71';
+                
+                const checkIcon = document.createElement('i');
+                checkIcon.className = 'fas fa-check-circle';
+                checkIcon.style.fontSize = '4rem';
+                
+                overlay.appendChild(checkIcon);
+                this.camera.appendChild(overlay);
+                
+                // 1秒后移除动画
+                setTimeout(() => {
+                    if (overlay.parentNode) {
+                        overlay.remove();
+                    }
+                }, 1000);
+            }
+            
+            switchCamera() {
+                // 切换前后摄像头
+                this.facingMode = this.facingMode === 'environment' ? 'user' : 'environment';
+                
+                // 停止当前摄像头
+                this.stopCamera();
+                
+                // 重新启动摄像头
+                setTimeout(() => {
+                    this.startCamera();
+                }, 100);
+            }
+            
+            getCapturedImages() {
+                return this.capturedImages;
+            }
+            
+            clearCapturedImages() {
+                this.capturedImages = [];
+                this.updateCount();
+            }
+        }
+        
         // 视图管理
         class ViewManager {
             constructor() {
@@ -1277,9 +1614,9 @@
                 
                 this.questionManager = new WrongQuestionManager();
                 this.imageViewer = new ImageViewer();
+                this.fullscreenCamera = new FullscreenCamera();
                 this.currentQuestionId = null;
                 this.capturedImages = [];
-                this.currentStream = null;
                 this.init();
             }
             
@@ -1287,6 +1624,9 @@
                 this.showView('main');
                 this.setupEventListeners();
                 this.renderQuestions();
+                
+                // 将实例暴露给全局，供全屏相机调用
+                window.viewManager = this;
             }
             
             showView(viewName) {
@@ -1316,8 +1656,14 @@
                     this.showView('add');
                 });
                 
+                // 返回按钮 - 跳转到上一页
                 document.getElementById('main-back-btn').addEventListener('click', () => {
-                    alert('返回上一页功能（在实际应用中会返回上一页）');
+                    if (document.referrer && document.referrer.includes(window.location.host)) {
+                        window.history.back();
+                    } else {
+                        // 如果没有上一页，显示提示
+                        alert('已经是第一页了');
+                    }
                 });
                 
                 // 科目标签事件
@@ -1336,7 +1682,6 @@
                 
                 // 添加界面事件
                 document.getElementById('cancel-btn').addEventListener('click', () => {
-                    this.stopCamera();
                     this.showView('main');
                 });
                 
@@ -1376,12 +1721,8 @@
                 });
                 
                 // 摄像头事件
-                document.getElementById('capture-btn').addEventListener('click', () => {
-                    this.captureImage();
-                });
-                
-                document.getElementById('retake-btn').addEventListener('click', () => {
-                    this.retakePhoto();
+                document.getElementById('fullscreen-camera-btn').addEventListener('click', () => {
+                    this.fullscreenCamera.show();
                 });
                 
                 document.getElementById('upload-btn').addEventListener('click', () => {
@@ -1473,112 +1814,20 @@
                 this.capturedImages = [];
                 this.updateImagesPreview();
                 
-                // 重置摄像头界面
-                document.getElementById('camera-preview').innerHTML = `
-                    <div id="camera-placeholder">
-                        <i class="fas fa-camera" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
-                        <p id="camera-status-text">正在启动摄像头...</p>
-                    </div>
-                    <video id="camera-stream" style="display:none;" autoplay playsinline></video>
-                    <canvas id="camera-canvas" style="display:none;"></canvas>
-                `;
-                
-                // 隐藏重拍按钮
-                document.getElementById('retake-btn').style.display = 'none';
-                document.getElementById('capture-btn').style.display = 'flex';
-                
-                // 自动启动摄像头
-                this.startCamera();
+                // 清空全屏相机的图片
+                this.fullscreenCamera.clearCapturedImages();
             }
             
-            startCamera() {
-                const statusText = document.getElementById('camera-status-text');
-                
-                // 检查浏览器是否支持媒体设备
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    statusText.textContent = '您的浏览器不支持摄像头功能，请使用上传图片功能';
-                    statusText.style.color = '#ff6b6b';
-                    return;
-                }
-                
-                // 获取摄像头权限
-                navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment', // 优先使用后置摄像头
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: false
-                })
-                .then(stream => {
-                    this.currentStream = stream;
-                    const cameraStream = document.getElementById('camera-stream');
-                    
-                    // 设置视频源
-                    cameraStream.srcObject = stream;
-                    
-                    // 隐藏占位符
-                    const placeholder = document.getElementById('camera-placeholder');
-                    if (placeholder) placeholder.style.display = 'none';
-                    
-                    // 显示视频流
-                    cameraStream.style.display = 'block';
-                    
-                    // 播放视频流
-                    cameraStream.play().then(() => {
-                        console.log('摄像头启动成功');
-                    }).catch(err => {
-                        console.error('播放视频流失败:', err);
-                        statusText.textContent = '播放视频流失败，请检查摄像头权限';
-                        statusText.style.color = '#ff6b6b';
-                    });
-                })
-                .catch(err => {
-                    console.error("摄像头访问错误: ", err);
-                    const placeholder = document.getElementById('camera-placeholder');
-                    if (placeholder) {
-                        statusText.innerHTML = `
-                            <i class="fas fa-video-slash" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
-                            <p>无法访问摄像头，请使用上传图片功能</p>
-                            <p style="font-size:0.8rem; margin-top:5px;">可能的原因：<br>1. 摄像头被其他应用占用<br>2. 未授予摄像头权限<br>3. 设备没有摄像头</p>
-                        `;
-                        statusText.style.color = '#ff6b6b';
-                    }
-                });
-            }
-            
-            captureImage() {
-                const cameraStream = document.getElementById('camera-stream');
-                const cameraCanvas = document.getElementById('camera-canvas');
-                
-                if (!cameraStream.srcObject) {
-                    alert('摄像头未启动，请先启动摄像头或使用上传图片功能');
-                    return;
-                }
-                
-                const context = cameraCanvas.getContext('2d');
-                
-                // 设置canvas尺寸与视频流一致
-                cameraCanvas.width = cameraStream.videoWidth;
-                cameraCanvas.height = cameraStream.videoHeight;
-                
-                // 绘制当前视频帧到canvas
-                context.drawImage(cameraStream, 0, 0, cameraCanvas.width, cameraCanvas.height);
-                
-                // 将canvas内容转换为图片
-                const imageData = cameraCanvas.toDataURL('image/jpeg', 0.8);
-                
-                // 将图片添加到数组中
-                this.capturedImages.push(imageData);
-                
-                // 更新图片预览
+            addCapturedImages(images) {
+                // 从全屏相机添加图片
+                this.capturedImages = [...this.capturedImages, ...images];
                 this.updateImagesPreview();
                 
                 // 显示提示
-                this.showCameraMessage(`已拍摄第 ${this.capturedImages.length} 张图片，可继续拍摄或上传更多图片`);
+                this.showMessage(`已添加${images.length}张图片，共${this.capturedImages.length}张`);
             }
             
-            showCameraMessage(message) {
+            showMessage(message) {
                 // 移除之前的消息
                 const existingMessage = document.querySelector('.camera-status');
                 if (existingMessage) {
@@ -1600,30 +1849,6 @@
                         messageDiv.remove();
                     }
                 }, 3000);
-            }
-            
-            retakePhoto() {
-                // 清除最后一张图片
-                if (this.capturedImages.length > 0) {
-                    this.capturedImages.pop();
-                    this.updateImagesPreview();
-                }
-                
-                // 如果还有图片，显示重拍按钮，否则隐藏
-                if (this.capturedImages.length > 0) {
-                    document.getElementById('retake-btn').style.display = 'flex';
-                } else {
-                    document.getElementById('retake-btn').style.display = 'none';
-                }
-            }
-            
-            stopCamera() {
-                if (this.currentStream) {
-                    this.currentStream.getTracks().forEach(track => {
-                        track.stop();
-                    });
-                    this.currentStream = null;
-                }
             }
             
             uploadImages() {
@@ -1653,7 +1878,7 @@
                             // 所有文件加载完成后更新预览
                             if (loadedCount === files.length) {
                                 this.updateImagesPreview();
-                                this.showCameraMessage(`成功上传 ${files.length} 张图片`);
+                                this.showMessage(`成功上传 ${files.length} 张图片`);
                             }
                         };
                         reader.readAsDataURL(file);
@@ -1685,13 +1910,6 @@
                     
                     imagesPreview.appendChild(imageItem);
                 });
-                
-                // 更新重拍按钮显示
-                if (this.capturedImages.length > 0) {
-                    document.getElementById('retake-btn').style.display = 'flex';
-                } else {
-                    document.getElementById('retake-btn').style.display = 'none';
-                }
             }
             
             removeImage(index) {
@@ -1731,9 +1949,6 @@
                 
                 this.questionManager.addQuestion(newQuestion);
                 alert('错题保存成功！');
-                
-                // 停止摄像头
-                this.stopCamera();
                 
                 // 返回主界面
                 this.showView('main');
