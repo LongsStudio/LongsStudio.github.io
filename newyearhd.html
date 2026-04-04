@@ -3,9 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>错题本 - 丙午马年</title>
+    <title>错题本</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 强制更新弹窗样式 - 新增部分 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 85%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-icon {
+            font-size: 3.5rem;
+            color: #f1c40f;
+            margin-bottom: 20px;
+        }
+
+        .modal-content h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .modal-content p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .update-confirm-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .update-confirm-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+        }
+
+        /* 原有CSS样式 */
         * {
             margin: 0;
             padding: 0;
@@ -798,6 +868,19 @@
     </style>
 </head>
 <body>
+    <!-- 强制更新弹窗 - 新增部分 -->
+    <div id="force-update-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>请更新到最新版本！</h3>
+            <p>如果已是最新版本，请到首页错题本中进入！</p>
+            <button id="update-confirm-btn" class="update-confirm-btn">确认并跳转更新</button>
+        </div>
+    </div>
+    
+    <!-- 原有错题本应用 -->
     <div id="main-view" class="view active">
         <header class="header">
             <button class="back-btn" id="main-back-btn"><i class="fas fa-arrow-left"></i></button>
@@ -842,7 +925,7 @@
                 <div class="detail-info"><div><span class="detail-subject" id="detail-subject">语文</span><span class="question-status status-not-mastered" id="detail-mastery">未掌握</span></div><div class="detail-date" id="detail-date"></div></div>
                 <div class="detail-group"><label class="detail-label">错误原因</label><div class="detail-content" id="detail-reason"></div></div>
                 <div class="detail-group"><label class="detail-label">正确答案/解析</label><div class="detail-content" id="detail-answer"></div></div>
-                <div class="mastery-section"><div><h3 class="detail-label">是否掌握</h3><p style="color:#777; font-size:0.9rem;">标记为已掌握后将不再重点复习</p></div><div class="mastery-toggle"><span id="detail-mastery-status">未掌握</span><label class="toggle-switch"><input type="checkbox" id="detail-mastery-toggle"><span class="toggle-slider"></span></label></div></div>
+                <div class="mastery-section"><div><h3 class="detail-label">是否掌握</h3><p style="color:#777; font-size:0.9rem;">标记为已掌握后将不再重点复习</p></div><div class="mastery-toggle"><span id="detail-mastery-status">未掌握</span><label class="toggle-slider"><input type="checkbox" id="detail-mastery-toggle"><span class="toggle-slider"></span></label></div></div>
             </div>
             <div class="action-buttons"><button class="action-btn delete" id="delete-btn">删除错题</button><button class="action-btn cancel" id="detail-back-btn">返回</button></div>
         </div>
@@ -865,6 +948,101 @@
 
     <script>
         (function(){
+            // 强制更新弹窗逻辑 - 针对安卓WebView应用优化
+            (function initForceUpdateModal() {
+                const modal = document.getElementById('force-update-modal');
+                const confirmBtn = document.getElementById('update-confirm-btn');
+                const TARGET_URL = 'https://longsstudio.github.io/zhbbxz.html'; // 您指定的跳转地址
+                
+                // 确保弹窗显示
+                modal.style.display = 'flex';
+                
+                // 绑定确认按钮点击事件
+                confirmBtn.addEventListener('click', function() {
+                    // 方法1: 首先尝试使用 Android Intent 协议跳出当前应用
+                    tryOpenViaIntent();
+                    
+                    // 延迟后尝试返回上一页
+                    setTimeout(function() {
+                        try {
+                            window.history.back();
+                        } catch (e) {
+                            console.log('返回上一页失败');
+                        }
+                    }, 300);
+                });
+                
+                // 通过 Intent 协议尝试打开外部浏览器
+                function tryOpenViaIntent() {
+                    // 构建 intent 链接，让系统处理外部打开
+                    const intentUrl = 'intent://longsstudio.github.io/#Intent;' +
+                                     'scheme=https;' +
+                                     'action=android.intent.action.VIEW;' +
+                                     'category=android.intent.category.BROWSABLE;' +
+                                     'package=com.android.chrome;' + // 可指定包名，不指定则系统选择
+                                     'S.browser_fallback_url=https://longsstudio.github.io;' + // 备用URL
+                                     'end';
+                    
+                    // 尝试通过iframe触发intent
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = intentUrl;
+                    
+                    document.body.appendChild(iframe);
+                    
+                    // 如果intent失败，回退到普通方法
+                    setTimeout(function() {
+                        document.body.removeChild(iframe);
+                        
+                        // 再次尝试普通方法
+                        tryNormalOpen();
+                    }, 500);
+                }
+                
+                // 普通方法尝试打开
+                function tryNormalOpen() {
+                    // 方法2: 通过a标签尝试打开
+                    const a = document.createElement('a');
+                    a.href = TARGET_URL;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    
+                    // 添加特定属性
+                    a.setAttribute('target', '_system');
+                    a.setAttribute('data-rel', 'external');
+                    a.setAttribute('data-action', 'browser');
+                    
+                    document.body.appendChild(a);
+                    
+                    // 尝试触发点击
+                    const event = new MouseEvent('click', {
+                        view: window,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    a.dispatchEvent(event);
+                    
+                    // 也尝试直接click
+                    setTimeout(function() {
+                        a.click();
+                        document.body.removeChild(a);
+                    }, 100);
+                    
+                    // 方法3: 作为后备，尝试window.open
+                    setTimeout(function() {
+                        const win = window.open(TARGET_URL, '_system');
+                        if (!win || win.closed) {
+                            console.log('未能成功打开外部浏览器');
+                        }
+                    }, 200);
+                }
+                
+                // 阻止任何可能关闭弹窗的操作
+                modal.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            })();
+            
             // 数据管理
             class WrongQuestionManager {
                 constructor(){
