@@ -14,32 +14,35 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
-        
+
         :root {
-            --primary-color: #00c853;       /* 科技亮绿色 */
-            --secondary-color: #00796b;     /* 深青绿色 */
-            --accent-color: #64dd17;        /* 荧光绿 */
+            --primary-color: #00c853;
+            /* 科技亮绿色 */
+            --secondary-color: #00796b;
+            /* 深青绿色 */
+            --accent-color: #64dd17;
+            /* 荧光绿 */
             --light-color: #f8f9fa;
             --dark-color: #212529;
             --gray-color: #6c757d;
         }
-        
+
         body {
             background-color: #f0f2f5;
             color: var(--dark-color);
             line-height: 1.6;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 20%, rgba(0, 200, 83, 0.05) 0%, transparent 20%),
                 radial-gradient(circle at 90% 80%, rgba(0, 121, 107, 0.05) 0%, transparent 20%);
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
@@ -47,13 +50,13 @@
             padding: 20px 0;
             margin-bottom: 40px;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .logo-icon {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             width: 50px;
@@ -64,13 +67,13 @@
             justify-content: center;
             box-shadow: 0 5px 15px rgba(0, 200, 83, 0.3);
         }
-        
+
         .logo-icon img {
             width: 30px;
             height: 30px;
             object-fit: contain;
         }
-        
+
         .logo-text h1 {
             font-size: 28px;
             font-weight: 700;
@@ -80,12 +83,12 @@
             color: transparent;
             margin-bottom: 5px;
         }
-        
+
         .logo-text p {
             color: var(--gray-color);
             font-size: 14px;
         }
-        
+
         .announcement-btn {
             background: linear-gradient(135deg, var(--accent-color), #9cff57);
             color: white;
@@ -99,12 +102,12 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(100, 221, 23, 0.2);
         }
-        
+
         .announcement-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(100, 221, 23, 0.3);
         }
-        
+
         .hero-section {
             display: flex;
             flex-wrap: wrap;
@@ -112,31 +115,31 @@
             margin-bottom: 60px;
             align-items: center;
         }
-        
+
         .hero-content {
             flex: 1;
             min-width: 300px;
         }
-        
+
         .hero-content h2 {
             font-size: 42px;
             margin-bottom: 20px;
             line-height: 1.2;
         }
-        
+
         .hero-content h2 span {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        
+
         .hero-content p {
             font-size: 18px;
             color: var(--gray-color);
             margin-bottom: 30px;
         }
-        
+
         .hero-image {
             flex: 1;
             min-width: 300px;
@@ -144,21 +147,21 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .board-visual {
             width: 100%;
             max-width: 500px;
             height: 350px;
             background: linear-gradient(145deg, #ffffff, #e6e9ef);
             border-radius: 20px;
-            box-shadow: 
+            box-shadow:
                 0 15px 35px rgba(0, 0, 0, 0.1),
                 inset 0 -1px 0 rgba(255, 255, 255, 0.7);
             position: relative;
             overflow: hidden;
             padding: 20px;
         }
-        
+
         .board-content {
             position: relative;
             z-index: 2;
@@ -166,18 +169,18 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .board-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
         }
-        
+
         .board-tools {
             display: flex;
             gap: 10px;
         }
-        
+
         .tool {
             width: 30px;
             height: 30px;
@@ -189,7 +192,7 @@
             justify-content: center;
             color: var(--primary-color);
         }
-        
+
         .board-body {
             flex-grow: 1;
             background: white;
@@ -200,47 +203,47 @@
             flex-direction: column;
             gap: 12px;
         }
-        
+
         .board-line {
             height: 6px;
             border-radius: 3px;
             background: #e9ecef;
         }
-        
+
         .board-line:nth-child(1) {
             width: 80%;
         }
-        
+
         .board-line:nth-child(2) {
             width: 60%;
         }
-        
+
         .board-line:nth-child(3) {
             width: 70%;
         }
-        
+
         .board-line:nth-child(4) {
             width: 40%;
         }
-        
+
         .download-section {
             margin-bottom: 60px;
         }
-        
+
         .section-title {
             text-align: center;
             font-size: 32px;
             margin-bottom: 40px;
             color: var(--dark-color);
         }
-        
+
         .download-cards {
             display: flex;
             flex-wrap: wrap;
             gap: 30px;
             justify-content: center;
         }
-        
+
         .download-card {
             background: white;
             border-radius: 20px;
@@ -251,12 +254,12 @@
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .download-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
         }
-        
+
         .platform-icon {
             width: 80px;
             height: 80px;
@@ -268,26 +271,26 @@
             font-size: 36px;
             color: white;
         }
-        
+
         .android .platform-icon {
             background: linear-gradient(135deg, #3ddc84, #2ab76e);
         }
-        
+
         .windows .platform-icon {
             background: linear-gradient(135deg, #0078d7, #005a9e);
         }
-        
+
         .download-card h3 {
             font-size: 28px;
             margin-bottom: 15px;
         }
-        
+
         .download-card p {
             color: var(--gray-color);
             margin-bottom: 25px;
             min-height: 60px;
         }
-        
+
         .download-btn {
             display: inline-flex;
             align-items: center;
@@ -306,22 +309,73 @@
             max-width: 250px;
             margin-top: 10px;
         }
-        
+
         .download-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 200, 83, 0.4);
         }
-        
+
+        /* ---- 备用下载按钮样式 ---- */
+        .backup-download-wrapper {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .backup-download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-color);
+            font-size: 15px;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            background: #f1f3f5;
+            border: 1px solid #e9ecef;
+            transition: all 0.25s ease;
+        }
+
+        .backup-download-link i {
+            color: #f39c12;
+            font-size: 14px;
+        }
+
+        .backup-download-link:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+            color: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .backup-download-link .badge {
+            background: #ffc107;
+            color: #212529;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---- 备用链接区域额外提示 ---- */
+        .backup-hint {
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 6px;
+        }
+
         .features-section {
             margin-bottom: 60px;
         }
-        
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
         }
-        
+
         .feature-card {
             background: white;
             padding: 30px;
@@ -329,11 +383,11 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .feature-icon {
             width: 60px;
             height: 60px;
@@ -346,17 +400,17 @@
             color: white;
             font-size: 24px;
         }
-        
+
         .feature-card h4 {
             font-size: 20px;
             margin-bottom: 12px;
             color: var(--dark-color);
         }
-        
+
         .feature-card p {
             color: var(--gray-color);
         }
-        
+
         footer {
             text-align: center;
             padding: 40px 0;
@@ -364,12 +418,12 @@
             border-top: 1px solid rgba(0, 0, 0, 0.05);
             margin-top: 40px;
         }
-        
+
         .copyright {
             font-size: 14px;
             margin-top: 20px;
         }
-        
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             header {
@@ -377,30 +431,29 @@
                 gap: 20px;
                 text-align: center;
             }
-            
+
             .hero-content h2 {
                 font-size: 32px;
             }
-            
+
             .section-title {
                 font-size: 28px;
             }
         }
-        
-        /* 下载链接样式 */
+
         .download-links {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
         }
-        
+
         .version-info {
             font-size: 14px;
             color: var(--gray-color);
             margin-top: 10px;
         }
-        
+
         /* 加载动画 */
         @keyframes fadeInUp {
             from {
@@ -412,22 +465,21 @@
                 transform: translateY(0);
             }
         }
-        
+
         .animate-in {
             animation: fadeInUp 0.6s ease forwards;
         }
-        
+
         .delay-1 {
             animation-delay: 0.2s;
             opacity: 0;
         }
-        
+
         .delay-2 {
             animation-delay: 0.4s;
             opacity: 0;
         }
-        
-        /* 下载提示样式 */
+
         .download-notice {
             background: rgba(255, 241, 200, 0.8);
             border-left: 4px solid #ffc107;
@@ -437,7 +489,7 @@
             font-size: 14px;
             text-align: left;
         }
-        
+
         .download-notice i {
             color: #ff9800;
             margin-right: 8px;
@@ -461,7 +513,7 @@
                 产品公告
             </a>
         </header>
-        
+
         <section class="hero-section">
             <div class="hero-content animate-in">
                 <h2>重新定义<span>数字白板</span>体验</h2>
@@ -494,10 +546,11 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="download-section">
             <h2 class="section-title animate-in">下载智慧白板</h2>
             <div class="download-cards">
+                <!-- ===== Android 卡片 ===== -->
                 <div class="download-card android animate-in">
                     <div class="platform-icon">
                         <i class="fab fa-android"></i>
@@ -505,10 +558,21 @@
                     <h3>Android 版本</h3>
                     <p>适用于手机和平板设备，支持触控笔和手指操作，随时随地记录灵感。</p>
                     <div class="download-links">
+                        <!-- 主下载按钮 -->
                         <a href="https://1840761319.v.123yx.com/1840761319/36143251" class="download-btn" id="android-download" target="_blank">
                             <i class="fas fa-download"></i>
                             下载 APK 文件
                         </a>
+
+                        <!-- 备用下载：123pan -->
+                        <div class="backup-download-wrapper">
+                            <a href="https://1840761319.share.123pan.cn/123pan/uA8NTd-jWQVd?pwd=2GyT#" class="backup-download-link" target="_blank" title="123pan 备用下载">
+                                <i class="fas fa-cloud"></i>
+                                123pan 备用下载
+                                <span class="badge">备</span>
+                            </a>
+                        </div>
+
                         <div class="download-notice">
                             <i class="fas fa-info-circle"></i>
                             如果下载后无法安装，请在设置中开启"允许安装来自未知来源的应用"
@@ -516,7 +580,8 @@
                         <div class="version-info">版本 1.15 | 大小 106.5 MB | Android 7.0+</div>
                     </div>
                 </div>
-                
+
+                <!-- ===== Windows 卡片 ===== -->
                 <div class="download-card windows animate-in delay-1">
                     <div class="platform-icon">
                         <i class="fab fa-windows"></i>
@@ -524,10 +589,21 @@
                     <h3>Windows 版本</h3>
                     <p>专为Windows系统优化，支持高分辨率屏幕和手写板，提供完整功能体验。支持课件编辑！</p>
                     <div class="download-links">
+                        <!-- 主下载按钮 -->
                         <a href="https://1840761319.cdn.123clouddisk.cn/1840761319/36706705" class="download-btn" id="windows-download" target="_blank">
                             <i class="fas fa-download"></i>
                             下载 EXE 文件
                         </a>
+
+                        <!-- 备用下载：123pan -->
+                        <div class="backup-download-wrapper">
+                            <a href="https://1840761319.share.123pan.cn/123pan/uA8NTd-aJryd?pwd=d41e#" class="backup-download-link" target="_blank" title="123pan 备用下载">
+                                <i class="fas fa-cloud"></i>
+                                123pan 备用下载
+                                <span class="badge">备</span>
+                            </a>
+                        </div>
+
                         <div class="download-notice">
                             <i class="fas fa-info-circle"></i>
                             下载完成后双击安装程序，按照提示完成安装
@@ -537,7 +613,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="features-section">
             <h2 class="section-title animate-in delay-1">核心功能</h2>
             <div class="features-grid">
@@ -548,7 +624,7 @@
                     <h4>智能画笔</h4>
                     <p>多种画笔类型和颜色选择，支持压感和倾斜检测，提供真实的书写和绘画体验。</p>
                 </div>
-                
+
                 <div class="feature-card animate-in delay-1">
                     <div class="feature-icon">
                         <i class="fas fa-users-cog"></i>
@@ -556,7 +632,7 @@
                     <h4>实时协作</h4>
                     <p>(即将推出)多人同时编辑，实时同步内容变化，支持语音和视频通话集成。</p>
                 </div>
-                
+
                 <div class="feature-card animate-in delay-2">
                     <div class="feature-icon">
                         <i class="fas fa-shapes"></i>
@@ -564,7 +640,7 @@
                     <h4>丰富素材</h4>
                     <p>内置多种形状、图表、贴纸和模板，快速创建专业级白板内容。</p>
                 </div>
-                
+
                 <div class="feature-card animate-in">
                     <div class="feature-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
@@ -572,7 +648,7 @@
                     <h4>云端同步</h4>
                     <p>(即将推出)自动保存到云端，跨设备访问您的工作内容，永不丢失重要创意。</p>
                 </div>
-                
+
                 <div class="feature-card animate-in delay-1">
                     <div class="feature-icon">
                         <i class="fas fa-vector-square"></i>
@@ -580,7 +656,7 @@
                     <h4>无限画布</h4>
                     <p>不受限制的创作空间，支持缩放和平移，自由组织您的内容。</p>
                 </div>
-                
+
                 <div class="feature-card animate-in delay-2">
                     <div class="feature-icon">
                         <i class="fas fa-file-export"></i>
@@ -590,7 +666,7 @@
                 </div>
             </div>
         </section>
-        
+
         <footer class="animate-in delay-2">
             <div class="logo">
                 <div class="logo-icon" style="width: 40px; height: 40px;">
@@ -607,43 +683,35 @@
             </div>
         </footer>
     </div>
-    
+
     <script>
-        // 页面加载动画
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.animate-in');
             animatedElements.forEach(el => {
                 el.style.opacity = '1';
             });
-            
-            // 添加下载统计（可选）
+
             const androidBtn = document.getElementById('android-download');
             const windowsBtn = document.getElementById('windows-download');
-            
+
             androidBtn.addEventListener('click', function() {
                 console.log('Android 下载链接被点击');
-                // 这里可以添加统计代码，如Google Analytics
             });
-            
+
             windowsBtn.addEventListener('click', function() {
                 console.log('Windows 下载链接被点击');
-                // 这里可以添加统计代码，如Google Analytics
             });
-            
-            // 添加快捷键支持
+
             document.addEventListener('keydown', function(e) {
-                // Alt + A 下载 Android 版本
                 if (e.altKey && e.key === 'a') {
                     androidBtn.click();
                 }
-                // Alt + W 下载 Windows 版本
                 if (e.altKey && e.key === 'w') {
                     windowsBtn.click();
                 }
             });
         });
-        
-        // 显示快捷键提示
+
         window.addEventListener('load', function() {
             setTimeout(function() {
                 console.log('下载快捷键: Alt+A (Android), Alt+W (Windows)');
