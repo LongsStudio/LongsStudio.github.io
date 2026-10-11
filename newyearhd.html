@@ -85,38 +85,6 @@ h1{
     background:#39ff39;
     color:#000;
 }
-
-/* ===== 全屏引导遮罩（浏览器拦截自动全屏时显示） ===== */
-#fsMask{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:rgba(0,0,0,.94);
-    display:none;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:20px;
-    cursor:pointer;
-    -webkit-tap-highlight-color:transparent;
-}
-#fsMask.show{ display:flex; }
-#fsMask .fs-btn{
-    padding:12px 44px;
-    border:2px solid #39ff39;
-    color:#39ff39;
-    border-radius:999px;
-    font-size:clamp(1rem,2.2vw,1.25rem);
-    animation:pulse 1.8s ease-in-out infinite;
-}
-@keyframes pulse{
-    0%,100%{ opacity:1; }
-    50%{ opacity:.4; }
-}
-#fsMask p{
-    color:#a8ffa8;
-    font-size:clamp(.8rem,2vw,1rem);
-}
 </style>
 </head>
 <body>
@@ -133,21 +101,13 @@ h1{
     <div class="tag">周年活动火热即将开启</div>
 </div>
 
-<!-- 自动全屏被浏览器拦截时，引导用户点一下 -->
-<div id="fsMask">
-    <div class="fs-btn">点击进入全屏</div>
-    <p>为获得最佳观看体验，请点击进入全屏</p>
-</div>
-
 <script>
 (function () {
-    var el   = document.documentElement;
-    var mask = document.getElementById('fsMask');
-
+    var el = document.documentElement;
     var everEntered = false;   // 是否成功进入过全屏
-    var leaving     = false;   // 防止重复触发返回
+    var leaving = false;       // 防止重复触发返回
 
-    /* ---------- 兼容获取当前全屏元素 ---------- */
+    /* ---------- 获取当前全屏元素 ---------- */
     function fsElement() {
         return document.fullscreenElement ||
                document.webkitFullscreenElement ||
@@ -155,13 +115,15 @@ h1{
                document.msFullscreenElement || null;
     }
 
-    /* ---------- 请求全屏（兼容各内核），返回 Promise ---------- */
+    /* ---------- 请求全屏 ---------- */
     function requestFS() {
         var fn = el.requestFullscreen ||
                  el.webkitRequestFullscreen ||
                  el.mozRequestFullScreen ||
                  el.msRequestFullscreen;
-        if (!fn) return null;                 // 浏览器不支持全屏 API
+
+        if (!fn) return null; // 浏览器不支持
+
         try {
             var r = fn.call(el);
             return (r && typeof r.then === 'function') ? r : Promise.resolve();
@@ -170,40 +132,65 @@ h1{
         }
     }
 
+    /* ---------- 第一次任意交互时自动全屏 ---------- */
+    function firstGestureHandler() {
+        removeFirstGesture();
+        tryEnterFS();
+    }
+
+    function bindFirstGesture() {
+        removeFirstGesture();
+        document.addEventListener('pointerdown', firstGestureHandler, { once: true, passive: true });
+        document.addEventListener('touchstart', firstGestureHandler, { once: true, passive: true });
+        document.addEventListener('keydown', firstGestureHandler, { once: true });
+    }
+
+    function removeFirstGesture() {
+        document.removeEventListener('pointerdown', firstGestureHandler);
+        document.removeEventListener('touchstart', firstGestureHandler);
+        document.removeEventListener('keydown', firstGestureHandler);
+    }
+
     /* ---------- 尝试进入全屏 ---------- */
-    function tryEnter() {
+    function tryEnterFS() {
+        if (fsElement()) return;
+
         var p = requestFS();
-        if (!p) {                 // 不支持全屏，直接正常显示页面
-            mask.classList.remove('show');
-            return;
-        }
+        if (!p) return; // 不支持全屏，不折腾
+
         p.then(function () {
-            mask.classList.remove('show');
+            everEntered = true;
+            removeFirstGesture();
         }).catch(function () {
-            // 被浏览器拦截（没有用户手势），显示引导遮罩
-            mask.classList.add('show');
+            // 被浏览器拦截：不显示按钮，等用户随便点一下/按一下
+            bindFirstGesture();
         });
     }
 
-    /* ---------- 退出全屏后：回到上一个地址 ---------- */
+    /* ---------- 退出全屏后返回上一个地址 ---------- */
     function leavePage() {
         var navigated = false;
-        function mark() { navigated = true; }
-        window.addEventListener('beforeunload', mark);
-        window.addEventListener('pagehide', mark);
+
+        function mark() {
+            navigated = true;
+        }
+
+        window.addEventListener('beforeunload', mark, { once: true });
+        window.addEventListener('pagehide', mark, { once: true });
 
         function fallback() {
             if (navigated) return;
+
             if (document.referrer && document.referrer !== location.href) {
-                location.replace(document.referrer);   // 替换当前记录，不再产生新历史
+                location.replace(document.referrer);
             } else {
-                window.close();                        // 没有来源就尝试关闭页面
+                window.close();
             }
         }
 
         if (history.length > 1) {
             history.back();
-            setTimeout(fallback, 500);                 // 返回失败时兜底
+            setTimeout(fallback, 500);
         } else {
             fallback();
         }
@@ -213,7 +200,7 @@ h1{
     function onFsChange() {
         if (fsElement()) {
             everEntered = true;
-            mask.classList.remove('show');
+            removeFirstGesture();
         } else if (everEntered && !leaving) {
             leaving = true;
             leavePage();
@@ -225,17 +212,13 @@ h1{
         document.addEventListener(ev, onFsChange);
     });
 
-    /* ---------- 遮罩点击 = 用户手势，可顺利进入全屏 ---------- */
-    mask.addEventListener('click', function () {
-        tryEnter();
-    });
+    /* ---------- 页面一打开立刻尝试自动全屏 ---------- */
+    tryEnterFS();
 
-    /* ---------- 页面一打开就尝试全屏 ---------- */
-    tryEnter();
-
-    // 有些浏览器首屏未就绪，load 后再补一次
     window.addEventListener('load', function () {
-        if (!fsElement() && !everEntered) tryEnter();
+        if (!fsElement() && !everEntered) {
+            tryEnterFS();
+        }
     });
 })();
 </script>
