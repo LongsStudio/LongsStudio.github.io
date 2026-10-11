@@ -11,6 +11,10 @@
     box-sizing: border-box;
     font-family: "Microsoft Yahei",sans-serif;
 }
+html,body{
+    width:100%;
+    height:100%;
+}
 body{
     background:#000;
     min-height:100vh;
@@ -20,6 +24,7 @@ body{
     justify-content:center;
     align-items:center;
     text-align:center;
+    overflow:hidden;
 }
 body::before{
     content:"";
@@ -80,9 +85,42 @@ h1{
     background:#39ff39;
     color:#000;
 }
+
+/* ===== 全屏引导遮罩（浏览器拦截自动全屏时显示） ===== */
+#fsMask{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:rgba(0,0,0,.94);
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:20px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+}
+#fsMask.show{ display:flex; }
+#fsMask .fs-btn{
+    padding:12px 44px;
+    border:2px solid #39ff39;
+    color:#39ff39;
+    border-radius:999px;
+    font-size:clamp(1rem,2.2vw,1.25rem);
+    animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.4; }
+}
+#fsMask p{
+    color:#a8ffa8;
+    font-size:clamp(.8rem,2vw,1rem);
+}
 </style>
 </head>
 <body>
+
 <div class="wrap">
     <img class="logo" src="https://longsstudio.github.io/zhbbtb.png" alt="智慧白板logo">
     <h1>智慧白板 · 一周年庆典</h1>
@@ -94,5 +132,112 @@ h1{
     </p>
     <div class="tag">周年活动火热即将开启</div>
 </div>
+
+<!-- 自动全屏被浏览器拦截时，引导用户点一下 -->
+<div id="fsMask">
+    <div class="fs-btn">点击进入全屏</div>
+    <p>为获得最佳观看体验，请点击进入全屏</p>
+</div>
+
+<script>
+(function () {
+    var el   = document.documentElement;
+    var mask = document.getElementById('fsMask');
+
+    var everEntered = false;   // 是否成功进入过全屏
+    var leaving     = false;   // 防止重复触发返回
+
+    /* ---------- 兼容获取当前全屏元素 ---------- */
+    function fsElement() {
+        return document.fullscreenElement ||
+               document.webkitFullscreenElement ||
+               document.mozFullScreenElement ||
+               document.msFullscreenElement || null;
+    }
+
+    /* ---------- 请求全屏（兼容各内核），返回 Promise ---------- */
+    function requestFS() {
+        var fn = el.requestFullscreen ||
+                 el.webkitRequestFullscreen ||
+                 el.mozRequestFullScreen ||
+                 el.msRequestFullscreen;
+        if (!fn) return null;                 // 浏览器不支持全屏 API
+        try {
+            var r = fn.call(el);
+            return (r && typeof r.then === 'function') ? r : Promise.resolve();
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    }
+
+    /* ---------- 尝试进入全屏 ---------- */
+    function tryEnter() {
+        var p = requestFS();
+        if (!p) {                 // 不支持全屏，直接正常显示页面
+            mask.classList.remove('show');
+            return;
+        }
+        p.then(function () {
+            mask.classList.remove('show');
+        }).catch(function () {
+            // 被浏览器拦截（没有用户手势），显示引导遮罩
+            mask.classList.add('show');
+        });
+    }
+
+    /* ---------- 退出全屏后：回到上一个地址 ---------- */
+    function leavePage() {
+        var navigated = false;
+        function mark() { navigated = true; }
+        window.addEventListener('beforeunload', mark);
+        window.addEventListener('pagehide', mark);
+
+        function fallback() {
+            if (navigated) return;
+            if (document.referrer && document.referrer !== location.href) {
+                location.replace(document.referrer);   // 替换当前记录，不再产生新历史
+            } else {
+                window.close();                        // 没有来源就尝试关闭页面
+            }
+        }
+
+        if (history.length > 1) {
+            history.back();
+            setTimeout(fallback, 500);                 // 返回失败时兜底
+        } else {
+            fallback();
+        }
+    }
+
+    /* ---------- 监听全屏状态变化 ---------- */
+    function onFsChange() {
+        if (fsElement()) {
+            everEntered = true;
+            mask.classList.remove('show');
+        } else if (everEntered && !leaving) {
+            leaving = true;
+            leavePage();
+        }
+    }
+
+    ['fullscreenchange', 'webkitfullscreenchange',
+     'mozfullscreenchange', 'MSFullscreenChange'].forEach(function (ev) {
+        document.addEventListener(ev, onFsChange);
+    });
+
+    /* ---------- 遮罩点击 = 用户手势，可顺利进入全屏 ---------- */
+    mask.addEventListener('click', function () {
+        tryEnter();
+    });
+
+    /* ---------- 页面一打开就尝试全屏 ---------- */
+    tryEnter();
+
+    // 有些浏览器首屏未就绪，load 后再补一次
+    window.addEventListener('load', function () {
+        if (!fsElement() && !everEntered) tryEnter();
+    });
+})();
+</script>
 </body>
 </html>
